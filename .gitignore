@@ -31,14 +31,10 @@ dist/
 Thumbs.db
 
 # Project-specific exclusions
-# Future: actual run output is excluded; v0 ships only the README banner.
-runs/*/
-!runs/README.md
-
-# Future: actual fixture data is excluded; v0 ships only the DATA-SOURCE.md placeholder.
-data/*.jsonl
-data/*.json
-!data/DATA-SOURCE.md
+# Captured-run artifacts are committed at T-EVIDENCE per PACKET-046 §3.1.
+# Fixture corpus committed under data/corpus/v1/ per PACKET-053; ad-hoc
+# top-level data/*.jsonl scratch files stay out of git.
+/data/*.jsonl
 
 # Secrets
 .env.local
