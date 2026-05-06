@@ -1,47 +1,31 @@
-# Evidence Tier
+# Evidence
 
-This repository explicitly states the evidence tier of every release. The honesty discipline is load-bearing: a release at Tier 1 must not claim Tier 4 evidence; a release at Tier 4 must not claim Tier 5 evidence; Tier 5 and Tier 6 are anti-claims at every version of this repo.
+This repository anchors numeric and structural claims to captured runs under [`runs/`](../runs/). The honesty discipline is load-bearing: claims in the README, in this `docs/` tree, or in the repository description trace back to a corresponding captured run, or they are not substantiated by a measurement.
 
-## Tier definitions (used here)
+## What is committed
 
-- **Tier 1 — Static Trace.** Source read and reasoned about. Planning, contracts, scaffolds.
-- **Tier 2 — Build / syntax.** Code compiles or imports.
-- **Tier 3 — Targeted tests.** Relevant tests pass.
-- **Tier 4 — Real Command Path.** The harness command runs end-to-end against committed fixtures and the run artifacts (trace, state ledger, run report, manifest) are committed.
-- **Tier 5 — Live runtime.** Observed against deployed system. **Anti-claim for this repo at every version.**
-- **Tier 6 — Customer-visible proof.** Real user saw it work in production. **Anti-claim for this repo at every version.**
+The runtime ships v1 captured-run evidence on `main`:
 
-## Current release
+- One canonical run at [`runs/2026-05-06_240d1c56_0/`](../runs/2026-05-06_240d1c56_0/) — single-agent loop walks `search → fetch → read → summarize → final_answer` end-to-end via `make canonical`.
+- Seven policy-gate runs under [`runs/policy_gates/`](../runs/policy_gates/) — `pg1_off_allowlist_url`, `pg2_sandbox_escape`, `pg3_loop_budget`, `pg3_loop_budget_tokens`, `pg4_forbidden_tool`, `pg4_forbidden_tool_with_arg_schema_violation`, `pg5_arg_schema`.
+- Five failure-mode runs under [`runs/failure_modes/`](../runs/failure_modes/) — `tool_call_failure`, `retry_exhaustion`, `schema_mismatch`, `cycle_detection`, `catalogued_unhandled`.
 
-**v0 — Tier 1 — Static Trace.** Controlled scaffold only.
+Each captured run carries the four required artifacts: `trace.json`, `state.jsonl`, `run_report.md`, `manifest.json`. The `manifest.json` pins the corpus snapshot, policy-spec hash, code SHA, stub-LLM script hash, and seed. Reviewers verify reproducibility byte-identically with `make canonical-check`, `make policy-gates-check`, and `make failure-modes-check`.
 
-- No real traces.
-- No real retry histories.
-- No real policy-gate trip artifacts.
-- No benchmark numbers.
-- No multi-agent proof.
-- No coding-agent proof.
+## Reproducibility envelope
 
-## Target for next release
+`trace.json`, `state.jsonl`, and `run_report.md` are byte-identical across reruns given the pinned policy-spec hash, stub-LLM script hash, code SHA, and seed. `manifest.json` is byte-identical except on three documented per-run-volatile keys — `timestamp`, `wall_clock_seconds`, and `code.git_sha` — that are excluded from the reproducibility diff.
 
-**v1 — Tier 4 — Real Command Path.** Targets:
+In-repo absolute paths in `trace.json` and `state.jsonl` are normalized to a stable `<repo>` token before being written, so the captured artifacts are reviewer-checkout-independent. A reviewer cloning the repo into any path can run `make evidence-check` and see byte-identical re-emission against the committed runs.
 
-- `make canonical` runs end-to-end from a clean checkout
-- `runs/<id>/trace.json` (OTLP JSON subset), `state.jsonl`, `run_report.md`, `manifest.json` committed
-- At least three of {PG1, PG2, PG3, PG4, PG5} demonstrated with deny spans
-- At least five failure modes documented with reproducible triggers and committed runs
-- A reviewer with no prior context, on a 16 GB laptop, can clone, install, and run `make canonical` (and `make policy-gates`, `make failure-modes`) in <15 minutes wall-clock total
+## What this repository does NOT claim
 
-## Anti-claims (forbidden in this repo's surface at every version)
+- No live runtime against a deployed system, no real production observation, no customer-visible proof.
+- No real workflow, no real root-cause analysis, no production deployment claim.
+- No multi-agent coordination, no coding-agent variant, no MCP-server delivery, no large-scale inference platform, no RLHF / DPO / LoRA training.
+- No latency / throughput / SLA / benchmark numbers.
+- No "audit-grade", "compliance-ready", "SOC2-ready", "regulator-acceptable", or "production-grade policy engine" framing. The runtime is a local reference implementation with reproducible captured runs.
 
-- "Audit trail of every decision in production"
-- "Compliance-grade trace evidence"
-- "Tamper-proof audit log"
-- "Continuous audit posture"
-- "Customer-visible audit dashboard"
-- "Production-grade tracing infrastructure"
-- "Real-time tracing dashboard"
-- "Self-healing agent runtime"
-- "Unbounded retry resilience"
+## Discipline
 
-These over-claim what a runnable laptop harness can demonstrate.
+A claim that names a numeric outcome (a span count, a step count, a retry count, a scenario count) traces back to a `manifest.json` field or a `run_report.md` cell on a committed run. A claim that names a structural fact (a rule-id, a failure-mode name, a terminal reason) traces back to a `trace.json` attribute or a `state.jsonl` field on a committed run. A claim that does neither — that lives only in prose, with no captured run to back it up — is not substantiated by a measurement and is not made on this repository's public surface.
