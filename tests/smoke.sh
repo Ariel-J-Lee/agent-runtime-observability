@@ -42,11 +42,10 @@ for f in "${REQUIRED_FILES[@]}"; do
   fi
 done
 
+# The src/runtime/*.py modules graduated from v0 placeholders to real
+# implementations in the runtime-skeleton slice; only the trace exporter
+# and failure-mode catalog still ship as v0 stubs at this commit.
 STUB_FILES=(
-  src/runtime/agent.py
-  src/runtime/policy.py
-  src/runtime/retry.py
-  src/runtime/state.py
   src/tracing/otel_exporter.py
   src/fail/catalog.py
 )
