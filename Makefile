@@ -6,8 +6,8 @@ help:
 	@echo "Targets:"
 	@echo "  smoke         verify v0 file structure (real test, passes when shell is intact)"
 	@echo "  smoke-runtime pytest tests/test_runtime_smoke.py (requires 'pip install -r requirements-dev.txt')"
+	@echo "  policy-gates  run the policy-gate scenario tests; SCENARIO=<id> selects one (requires 'pip install -r requirements.txt requirements-dev.txt')"
 	@echo "  canonical     placeholder; lands at Tier 4 in a future implementation packet"
-	@echo "  policy-gates  placeholder; lands at Tier 4 in a future implementation packet"
 	@echo "  failure-modes placeholder; lands at Tier 4 in a future implementation packet"
 	@echo "  regression    placeholder; lands at Tier 4 in a future implementation packet"
 
@@ -22,8 +22,11 @@ canonical:
 	@exit 1
 
 policy-gates:
-	@echo "v0 scaffold; arrives at Tier-4 in a future implementation packet."
-	@exit 1
+ifdef SCENARIO
+	@python3 -m scripts.run_policy_gates --scenario $(SCENARIO)
+else
+	@python3 -m scripts.run_policy_gates --all
+endif
 
 failure-modes:
 	@echo "v0 scaffold; arrives at Tier-4 in a future implementation packet."

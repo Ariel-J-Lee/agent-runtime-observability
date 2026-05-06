@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Ariel-J-Lee/agent-runtime-observability/policy/v1.schema.json",
+  "title": "agent-runtime-observability v1 policy spec",
+  "type": "object",
+  "required": [
+    "tool_registry",
+    "url_allowlist",
+    "sandbox",
+    "arg_schema_enforcement",
+    "loop_budget",
+    "cycle_detection",
+    "retry"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "tool_registry": {
+      "type": "object",
+      "required": ["allowed", "denied"],
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "denied": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "url_allowlist": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "sandbox": {
+      "type": "object",
+      "required": ["path_template"],
+      "additionalProperties": false,
+      "properties": {
+        "path_template": { "type": "string", "minLength": 1 }
+      }
+    },
+    "arg_schema_enforcement": {
+      "enum": ["strict", "off"]
+    },
+    "loop_budget": {
+      "type": "object",
+      "required": ["max_iterations", "max_tokens"],
+      "additionalProperties": false,
+      "properties": {
+        "max_iterations": { "type": "integer", "minimum": 1 },
+        "max_tokens": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "cycle_detection": {
+      "type": "object",
+      "required": ["max_repeats"],
+      "additionalProperties": false,
+      "properties": {
+        "max_repeats": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "retry": {
+      "type": "object",
+      "required": ["max_retries", "backoff_base_ms", "backoff_cap_ms"],
+      "additionalProperties": false,
+      "properties": {
+        "max_retries": { "type": "integer", "minimum": 0 },
+        "backoff_base_ms": { "type": "integer", "minimum": 1 },
+        "backoff_cap_ms": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

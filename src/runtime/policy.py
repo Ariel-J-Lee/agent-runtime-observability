@@ -69,6 +69,25 @@ DEFAULT_DECISION_ALLOW: DecisionLiteral = "allow"
 DEFAULT_DECISION_DENY: DecisionLiteral = "deny"
 
 
+class PolicyValidationError(ValueError):
+    """Raised when ``policy/v1.yaml`` fails meta-schema validation.
+
+    Carries the JSON-pointer-style path to the offending field plus a
+    human-readable message. The runtime startup banner names the file
+    path and the offending key so misconfiguration surfaces at startup
+    rather than on the first denial.
+    """
+
+    def __init__(self, *, file_path: str, schema_path: str, message: str) -> None:
+        self.file_path = file_path
+        self.schema_path = schema_path
+        self.message = message
+        super().__init__(
+            f"Policy validation failed for {file_path}"
+            f" at {schema_path or '<root>'}: {message}"
+        )
+
+
 @dataclass(frozen=True)
 class PolicyDecision:
     """The typed result of a policy check.
@@ -100,10 +119,24 @@ class PolicySpec:
     version: str
 
     @staticmethod
-    def _hash_version(payload: Mapping[str, Any]) -> str:
-        """Return the SHA-256 prefix of the canonical JSON serialization."""
+    def _hash_version_from_dict(payload: Mapping[str, Any]) -> str:
+        """SHA-256[:12] of the canonical JSON serialization of a dict.
+
+        Used by ``from_dict`` so dict-built specs (the test path) still
+        produce a deterministic ``policy.version``.
+        """
         canonical = json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
         return hashlib.sha256(canonical).hexdigest()[:12]
+
+    @staticmethod
+    def _hash_version_from_bytes(content: bytes) -> str:
+        """SHA-256[:12] of the YAML file bytes.
+
+        Per the canonical plan, the operational ``policy.version`` is
+        the bytes hash so reviewers see byte-identical version strings
+        across machines regardless of dict round-trip variations.
+        """
+        return hashlib.sha256(content).hexdigest()[:12]
 
     @classmethod
     def from_dict(cls, spec: Mapping[str, Any]) -> "PolicySpec":
@@ -112,15 +145,31 @@ class PolicySpec:
             raise TypeError(
                 f"PolicySpec.from_dict requires a Mapping; got {type(spec).__name__}"
             )
-        return cls(raw=dict(spec), version=cls._hash_version(spec))
+        return cls(raw=dict(spec), version=cls._hash_version_from_dict(spec))
 
     @classmethod
     def from_yaml_path(cls, path: str | Path) -> "PolicySpec":
         """Build a :class:`PolicySpec` by parsing a YAML file.
 
-        Imports :mod:`yaml` lazily so this module's import path stays
-        free of third-party dependencies. Raises :class:`ImportError`
-        with installation guidance when ``pyyaml`` is unavailable.
+        Steps:
+
+        1. Import :mod:`yaml` lazily — this module's import path stays
+           free of third-party dependencies.
+        2. Read the file bytes and parse via ``yaml.safe_load``.
+        3. Locate the meta-schema at ``<yaml-parent>/v1.schema.json`` and
+           validate the parsed dict against it (raises
+           :class:`PolicyValidationError` on failure).
+        4. Pin ``policy.version`` to ``SHA-256(file-bytes)[:12]`` so two
+           reviewers loading the same file produce byte-identical
+           version strings.
+
+        Raises:
+            ImportError: when ``pyyaml`` is unavailable.
+            ValueError: when the YAML does not parse to a mapping.
+            PolicyValidationError: when the parsed spec violates the
+                meta-schema. The error names the file path, the
+                JSON-pointer to the offending field, and a one-line
+                message.
         """
         try:
             import yaml  # type: ignore[import-not-found]
@@ -131,15 +180,35 @@ class PolicySpec:
                 "Alternatively, use PolicySpec.from_dict() with a parsed mapping."
             ) from exc
         p = Path(path)
-        with p.open("r", encoding="utf-8") as f:
-            payload = yaml.safe_load(f)
+        content = p.read_bytes()
+        payload = yaml.safe_load(content)
         if payload is None:
             payload = {}
         if not isinstance(payload, Mapping):
             raise ValueError(
                 f"Policy YAML at {p} must parse to a mapping; got {type(payload).__name__}"
             )
-        return cls(raw=dict(payload), version=cls._hash_version(payload))
+
+        # Locate v1.schema.json next to the YAML file and self-validate.
+        schema_path = p.parent / "v1.schema.json"
+        if schema_path.exists():
+            from src.runtime._schema import SchemaError, validate
+
+            with schema_path.open("r", encoding="utf-8") as f:
+                schema = json.load(f)
+            try:
+                validate(dict(payload), schema)
+            except SchemaError as exc:
+                raise PolicyValidationError(
+                    file_path=str(p),
+                    schema_path=exc.path,
+                    message=exc.message,
+                ) from exc
+
+        return cls(
+            raw=dict(payload),
+            version=cls._hash_version_from_bytes(content),
+        )
 
     @classmethod
     def permissive(cls) -> "PolicySpec":
@@ -159,18 +228,24 @@ class PolicySpec:
 class PolicyChecker:
     """The policy seam invoked per intended tool call.
 
-    The checker is constructed once per agent run with a :class:`PolicySpec`
-    and a sandbox-root resolved at construction time. Per-call inputs
-    are an intended tool name plus the call's arguments. Returns a
-    :class:`PolicyDecision` carrying the ``policy_check`` span metadata.
+    The checker is constructed once per agent run with a :class:`PolicySpec`,
+    an optional sandbox-root, and an optional per-tool input
+    JSON-schema map. Per-call inputs are an intended tool name plus
+    the call's arguments. Returns a :class:`PolicyDecision` carrying
+    the ``policy_check`` span metadata.
 
     Rule evaluation order (first-deny wins):
 
     1. ``tool_registry.denied`` — explicit denylist
     2. ``tool_registry.allowed`` — when present, only listed tools allowed
-    3. ``url_allowlist`` — for ``fetch`` calls (or any call with a ``url`` arg)
-    4. ``sandbox.path_allowlist`` — for ``read`` / ``write`` calls
-       (or any call with a ``path`` arg)
+    3. ``arg_schema`` — when ``arg_schema_enforcement == "strict"`` and
+       a tool schema is registered, validate args
+    4. ``url_allowlist`` — for tools whose args carry ``url``
+    5. ``sandbox.path_template`` — for tools whose args carry ``path``
+
+    Loop-budget and cycle-detection rules fire on the agent step
+    boundary via :meth:`check_loop_budget` and :meth:`check_cycle` and
+    are not part of the per-call precedence.
 
     Args:
         spec: The :class:`PolicySpec` for this run.
@@ -179,6 +254,16 @@ class PolicyChecker:
             deny with ``rule_id="sandbox_path"``. When ``None``, sandbox
             checks are disabled (used by tests that don't exercise the
             filesystem rule).
+        tool_schemas: Optional ``{tool_name: input_json_schema}`` map.
+            When the policy spec sets ``arg_schema_enforcement ==
+            "strict"``, the constructor requires a schema for every
+            allowed tool; absence raises ``ValueError``. The validator
+            is :func:`src.runtime._schema.validate`.
+
+    Raises:
+        ValueError: when ``arg_schema_enforcement == "strict"`` and any
+            tool in ``tool_registry.allowed`` lacks a schema in
+            ``tool_schemas``.
     """
 
     def __init__(
@@ -186,11 +271,29 @@ class PolicyChecker:
         spec: PolicySpec,
         *,
         sandbox_root: Optional[str | Path] = None,
+        tool_schemas: Optional[Mapping[str, Mapping[str, Any]]] = None,
     ) -> None:
         self.spec = spec
         self.sandbox_root: Optional[Path] = (
             Path(sandbox_root).resolve() if sandbox_root is not None else None
         )
+        self.tool_schemas: Mapping[str, Mapping[str, Any]] = dict(tool_schemas or {})
+
+        # Strict-mode init guard: when arg_schema_enforcement="strict",
+        # every allowed tool must have a schema. Catches the operational
+        # misconfiguration "policy declares strict but tool surface
+        # didn't supply schemas" at construction, not at first check().
+        enforcement = spec.get("arg_schema_enforcement", "off")
+        if enforcement == "strict":
+            allowed = spec.get("tool_registry.allowed", []) or []
+            missing = [t for t in allowed if t not in self.tool_schemas]
+            if missing:
+                raise ValueError(
+                    "arg_schema_enforcement='strict' requires a schema for every "
+                    f"allowed tool; missing schemas for: {missing!r}. "
+                    "Pass tool_schemas={...} to PolicyChecker, or set "
+                    "arg_schema_enforcement: off in the policy spec."
+                )
 
     def check(
         self,
@@ -210,7 +313,7 @@ class PolicyChecker:
                 rule_id="tool_registry",
                 metadata={
                     "policy.requested_tool": tool_name,
-                    "policy.reason": "tool_explicitly_denied",
+                    "policy.registry_match": "denied",
                 },
             )
 
@@ -222,11 +325,30 @@ class PolicyChecker:
                 rule_id="tool_registry",
                 metadata={
                     "policy.requested_tool": tool_name,
-                    "policy.reason": "tool_not_in_allowlist",
+                    "policy.registry_match": "not_in_allowlist",
                 },
             )
 
-        # 3. URL allowlist
+        # 3. arg_schema (strict-mode only; only when tool has a schema)
+        enforcement = self.spec.get("arg_schema_enforcement", "off")
+        if enforcement == "strict" and tool_name in self.tool_schemas:
+            from src.runtime._schema import SchemaError, validate
+
+            try:
+                validate(dict(tool_args) if isinstance(tool_args, Mapping) else tool_args,
+                         self.tool_schemas[tool_name])
+            except SchemaError as exc:
+                return PolicyDecision(
+                    decision=DEFAULT_DECISION_DENY,
+                    rule_id="arg_schema",
+                    metadata={
+                        "policy.tool": tool_name,
+                        "policy.schema_error": exc.message,
+                        "policy.failed_path": exc.path,
+                    },
+                )
+
+        # 4. URL allowlist
         url = tool_args.get("url") if isinstance(tool_args, Mapping) else None
         if url is not None:
             url_allowlist = self.spec.get("url_allowlist", None)
@@ -237,12 +359,13 @@ class PolicyChecker:
                         decision=DEFAULT_DECISION_DENY,
                         rule_id="url_allowlist",
                         metadata={
+                            "policy.tool": tool_name,
                             "policy.url": str(url),
                             "policy.host": host,
                         },
                     )
 
-        # 4. Sandbox path
+        # 5. Sandbox path
         path_arg = (
             tool_args.get("path") if isinstance(tool_args, Mapping) else None
         )
@@ -255,6 +378,7 @@ class PolicyChecker:
                     decision=DEFAULT_DECISION_DENY,
                     rule_id="sandbox_path",
                     metadata={
+                        "policy.tool": tool_name,
                         "policy.target_path": str(path_arg),
                         "policy.resolved_path": str(real),
                         "policy.sandbox_root": str(self.sandbox_root),
@@ -284,6 +408,7 @@ class PolicyChecker:
                 metadata={
                     "policy.iterations": iterations,
                     "policy.max_iterations": int(max_iter),
+                    "policy.limit_kind": "iterations",
                 },
             )
         max_tokens = self.spec.get("loop_budget.max_tokens", None)
@@ -294,6 +419,7 @@ class PolicyChecker:
                 metadata={
                     "policy.tokens": tokens,
                     "policy.max_tokens": int(max_tokens),
+                    "policy.limit_kind": "tokens",
                 },
             )
         return PolicyDecision(decision=DEFAULT_DECISION_ALLOW)

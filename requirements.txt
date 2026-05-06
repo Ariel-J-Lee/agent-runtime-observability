@@ -1,0 +1,10 @@
+# agent-runtime-observability — runtime dependencies.
+#
+# This file lists the third-party packages the v1 runtime imports at
+# import or call time. Test-only tooling (pytest) lives in
+# requirements-dev.txt. Subsequent slices add lines as their lanes
+# introduce dependencies; do not pre-add packages.
+
+# Policy spec is YAML; src.runtime.PolicySpec.from_yaml_path
+# uses yaml.safe_load.
+PyYAML==6.0.2
