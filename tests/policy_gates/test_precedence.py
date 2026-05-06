@@ -24,42 +24,60 @@ from tests.policy_gates._stubs import STUB_TOOL_SCHEMAS
 
 
 def test_url_allowlist_wins_over_arg_schema(policy_spec, tmp_path):
-    """A fetch call with both an off-allowlist URL AND malformed args denies as ``url_allowlist``.
+    """A single ``fetch`` call that violates BOTH ``url_allowlist`` AND the fetch input schema denies as ``url_allowlist``.
 
-    Setup: ``fetch`` requires ``{url: str}``; calling with ``url=12345``
-    (an int, not a string) violates the input JSON-schema. The same
-    call's URL is also off-allowlist. Per §1.6, ``url_allowlist`` runs
-    before ``arg_schema``; the deny rule_id must be ``url_allowlist``,
-    not ``arg_schema``.
+    Setup: the fetch input JSON-schema requires ``{url: string}`` with
+    ``additionalProperties: false``. The call below carries an
+    off-allowlist host (``evil.test``) AND an extra ``rogue_field``
+    that the schema rejects under ``additionalProperties: false``. Both
+    rules would fire if both were evaluated; per §1.6, ``url_allowlist``
+    runs at position 2 and ``arg_schema`` runs at position 4, so the
+    deny rule_id must be ``url_allowlist`` and the schema-error
+    metadata must NOT appear.
+
+    A second negative-control call confirms the ``arg_schema`` rule
+    actually catches the same extra-field violation in isolation
+    (when the URL is on-allowlist), proving both rules are real and
+    the precedence is what's selecting the winner.
     """
     checker = PolicyChecker(
         policy_spec,
         tool_schemas=STUB_TOOL_SCHEMAS,
     )
-    decision = checker.check(
-        tool_name="fetch",
-        tool_args={"url": "https://evil.test/secret"},
-    )
-    # Sanity: with off-allowlist URL alone (well-formed args), deny is url_allowlist.
-    assert decision.decision == "deny"
-    assert decision.rule_id == "url_allowlist"
 
-    # Now exercise the precedence question: off-allowlist URL of a
-    # non-string type. The schema fails AND the URL is off-allowlist;
-    # url_allowlist must fire first per the locked precedence.
-    #
-    # Note: urlparse() coerces non-string urls to a hostname-less
-    # ParseResult, so we use a string with an off-allowlist host that
-    # would also fail a stricter `format: uri` schema check (we don't
-    # ship that today; this future-proofs the assertion).
-    decision_combined = checker.check(
-        tool_name="fetch",
-        tool_args={"url": "https://evil.test/secret"},
+    # 1. Combined-violation call: off-allowlist host AND extra arg.
+    combined_args = {
+        "url": "https://evil.test/secret",
+        "rogue_field": "would_fail_additionalProperties_false",
+    }
+    decision = checker.check(tool_name="fetch", tool_args=combined_args)
+    assert decision.decision == "deny"
+    assert decision.rule_id == "url_allowlist", (
+        f"expected url_allowlist (rule #2) to win over arg_schema (rule #4); "
+        f"got rule_id={decision.rule_id!r}"
     )
-    assert decision_combined.rule_id == "url_allowlist", (
-        f"expected url_allowlist to win over arg_schema; got rule_id="
-        f"{decision_combined.rule_id!r}"
+    assert decision.metadata.get("policy.host") == "evil.test"
+    # arg_schema's signature metadata MUST NOT be present, because the
+    # rule never ran.
+    assert "policy.schema_error" not in decision.metadata
+    assert "policy.failed_path" not in decision.metadata
+
+    # 2. Negative control: same extra-field violation, but with an
+    #    on-allowlist host. url_allowlist passes; arg_schema fires.
+    #    Proves both rules are real; precedence (not bug) selects
+    #    url_allowlist in case (1).
+    on_allowlist_args = {
+        "url": "https://fixtures.local/page",
+        "rogue_field": "would_fail_additionalProperties_false",
+    }
+    control = checker.check(tool_name="fetch", tool_args=on_allowlist_args)
+    assert control.decision == "deny"
+    assert control.rule_id == "arg_schema", (
+        f"expected arg_schema deny when url_allowlist passes; "
+        f"got rule_id={control.rule_id!r}"
     )
+    assert "policy.schema_error" in control.metadata
+    assert control.metadata.get("policy.tool") == "fetch"
 
 
 def test_sandbox_path_wins_over_arg_schema(policy_spec, tmp_path):
