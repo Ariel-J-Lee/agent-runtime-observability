@@ -42,13 +42,15 @@ for f in "${REQUIRED_FILES[@]}"; do
   fi
 done
 
-# The src/runtime/*.py modules graduated from v0 placeholders to real
-# implementations in the runtime-skeleton slice; src/fail/catalog.py
-# graduated in the failure-mode slice. Only the trace exporter still
-# ships as a v0 stub at this commit.
-STUB_FILES=(
-  src/tracing/otel_exporter.py
-)
+# Every former v0 placeholder has graduated to a real implementation:
+# src/runtime/*.py in the runtime-skeleton slice; src/fail/catalog.py
+# in the failure-mode slice; src/tracing/otel_exporter.py in the
+# trace-export slice. The placeholder-marker check now has no
+# remaining files to guard; the file-structure check above is the
+# load-bearing portion of the v0 smoke. The empty STUB_FILES array
+# is left intentionally so the smoke script's structure remains
+# obvious to future readers.
+STUB_FILES=()
 
 for f in "${STUB_FILES[@]}"; do
   if [[ -f "$f" ]] && ! grep -q "v0 PLACEHOLDER" "$f"; then
@@ -62,4 +64,4 @@ if [[ "$failed" == "1" ]]; then
   exit 1
 fi
 
-echo "v0 smoke check OK: file structure intact, placeholder markers present"
+echo "v0 smoke check OK: file structure intact (every former v0 placeholder has graduated to a real implementation)"
