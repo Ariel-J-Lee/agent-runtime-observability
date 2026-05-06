@@ -76,6 +76,11 @@ def test_state_ledger_skips_blank_lines_on_replay(tmp_path):
 def test_state_record_to_dict_carries_all_required_fields():
     rec = StateRecord(run_id="r1", step_index=0)
     payload = rec.to_dict()
+    # The ``failure_mode`` field was added in the failure-mode slice
+    # to carry the catalogued outcome through to the trace exporter
+    # (Option A in the canonical plan: state-record path + span-recorder
+    # emit). The default value is ``None`` for steps without a
+    # classified failure.
     assert set(payload.keys()) == {
         "run_id",
         "step_index",
@@ -85,7 +90,9 @@ def test_state_record_to_dict_carries_all_required_fields():
         "policy_decisions",
         "tool_results",
         "errors",
+        "failure_mode",
     }
+    assert payload["failure_mode"] is None
 
 
 def test_state_ledger_count_increments(tmp_path):

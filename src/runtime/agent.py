@@ -43,10 +43,12 @@ The seams the agent loop calls through:
 
 from __future__ import annotations
 
+import json
 import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable, Iterable, Literal, Mapping, Optional
 
+from src.fail import classify as classify_failure
 from src.runtime.policy import (
     PermissivePolicyChecker,
     PolicyChecker,
@@ -203,6 +205,13 @@ class Agent:
         run_id = run_id or uuid.uuid4().hex
         records: list[StateRecord] = []
 
+        # Cycle-detection state: ``(tool_name, json.dumps(args, sort_keys=True))``
+        # → number of times the runtime has already attempted that pair
+        # in the current run. The locked cycle key per the canonical
+        # plan is the JSON-sorted serialization. ``check_cycle`` denies
+        # when the count reaches ``policy.cycle_detection.max_repeats``.
+        cycle_tracker: dict[tuple[str, str], int] = {}
+
         result = AgentResult(run_id=run_id)
         terminal_reason: Optional[TerminalReasonLiteral] = None
 
@@ -259,10 +268,42 @@ class Agent:
                 self._persist(record, records)
                 break
 
-            # Per intended tool call: policy check, then (on allow) execute
-            # through the bounded-retry layer.
+            # Per intended tool call: cycle-detection check, policy check,
+            # then (on allow) execute through the bounded-retry layer.
             terminal_due_to_retry = False
+            terminal_due_to_cycle = False
             for tc in llm_output.intended_tool_calls:
+                # Cycle-detection — the locked key is
+                # ``(tool, json.dumps(args, sort_keys=True))``.
+                cycle_key = (tc.tool, json.dumps(dict(tc.args), sort_keys=True))
+                prior_repeats = cycle_tracker.get(cycle_key, 0)
+                cycle_decision = self.policy_checker.check_cycle(repeats=prior_repeats)
+                if cycle_decision.decision == "deny":
+                    self.span_recorder(
+                        "policy_check",
+                        self._policy_attrs(run_id, step_index, cycle_decision, tool_name=tc.tool),
+                    )
+                    record.policy_decisions.append(
+                        {
+                            "tool": tc.tool,
+                            "decision": cycle_decision.decision,
+                            "rule_id": cycle_decision.rule_id,
+                        }
+                    )
+                    record.tool_results.append(
+                        {"tool": tc.tool, "ok": False, "skipped_by_policy": True}
+                    )
+                    record.errors.append({"tool": tc.tool, "error": "cycle_detection"})
+                    record.failure_mode = classify_failure(
+                        span_attrs={
+                            "agent.policy.decision": "deny",
+                            "agent.policy.rule_id": "cycle_detection",
+                        },
+                    ) or "cycle_detection"
+                    terminal_due_to_cycle = True
+                    break
+                cycle_tracker[cycle_key] = prior_repeats + 1
+
                 decision = self.policy_checker.check(
                     tool_name=tc.tool,
                     tool_args=tc.args,
@@ -282,6 +323,18 @@ class Agent:
                     record.tool_results.append(
                         {"tool": tc.tool, "ok": False, "skipped_by_policy": True}
                     )
+                    # F3 (schema_mismatch): the policy seam already denied
+                    # with ``rule_id="arg_schema"``. Mirror the classifier's
+                    # mapping into ``record.failure_mode`` so the trace-side
+                    # ``agent.failure_mode`` attribute can be set without
+                    # the trace exporter having to re-classify.
+                    if decision.rule_id == "arg_schema":
+                        record.failure_mode = classify_failure(
+                            span_attrs={
+                                "agent.policy.decision": "deny",
+                                "agent.policy.rule_id": "arg_schema",
+                            },
+                        ) or "schema_mismatch"
                     continue
                 tool_fn = self.tool_registry.get(tc.tool)
                 if tool_fn is None:
@@ -330,6 +383,7 @@ class Agent:
                 try:
                     rr: RetryResult = wrapped(**dict(tc.args))
                 except RetryExhausted as exc:
+                    # F2 (retry_exhaustion).
                     record.errors.append(
                         {
                             "tool": tc.tool,
@@ -340,14 +394,83 @@ class Agent:
                     record.tool_results.append(
                         {"tool": tc.tool, "ok": False, "error": "retry_exhausted"}
                     )
+                    record.failure_mode = classify_failure(
+                        exception_class="RetryExhausted",
+                    ) or "retry_exhaustion"
                     terminal_due_to_retry = True
                     break
+                except (KeyboardInterrupt, SystemExit):
+                    # Process-level interrupts must propagate; do not
+                    # classify them as failure modes.
+                    raise
+                except BaseException as exc:  # noqa: BLE001
+                    # F5 (catalogued_unhandled). A non-retryable, non-
+                    # ``RetryExhausted`` exception escaped the retry layer.
+                    # Per the canonical plan §5, the catch-all guarantees
+                    # every observed failure has a documented mode. The
+                    # ``BaseException`` catch is deliberate: it captures
+                    # custom non-``Exception`` subclasses that bypass the
+                    # default retry predicate. ``KeyboardInterrupt`` and
+                    # ``SystemExit`` are explicitly re-raised above.
+                    exc_class = type(exc).__name__
+                    record.errors.append(
+                        {
+                            "tool": tc.tool,
+                            "error": "catalogued_unhandled",
+                            "exception_class": exc_class,
+                            "message": str(exc),
+                        }
+                    )
+                    record.tool_results.append(
+                        {
+                            "tool": tc.tool,
+                            "ok": False,
+                            "error": "catalogued_unhandled",
+                            "exception_class": exc_class,
+                        }
+                    )
+                    record.failure_mode = classify_failure(
+                        exception_class=exc_class,
+                    ) or "catalogued_unhandled"
+                    terminal_due_to_retry = True
+                    break
+
+                # F1 (tool_call_failure) — non-terminal: record observed
+                # transient failures along the way to a successful result.
+                if any(a.outcome == "transient_failure" for a in rr.attempts):
+                    record.failure_mode = (
+                        classify_failure(retry_outcome="transient_failure")
+                        or "tool_call_failure"
+                    )
 
                 record.tool_results.append(
                     {"tool": tc.tool, "ok": True, "result": rr.value}
                 )
 
+            # Emit the failure_mode through the span_recorder when classified
+            # so the trace seam can attach ``agent.failure_mode`` to the
+            # offending ``agent_step`` span without re-classifying. The
+            # event is a follow-up emit on the same span class; T-TRACE's
+            # exporter folds it into the existing span.
+            if record.failure_mode is not None:
+                self.span_recorder(
+                    "agent_step",
+                    {
+                        "agent.run_id": run_id,
+                        "agent.step_index": step_index,
+                        "agent.failure_mode": record.failure_mode,
+                    },
+                )
+
             self._persist(record, records)
+
+            if terminal_due_to_cycle:
+                # F4 cycle-detection terminal path. ``policy_denial_terminal``
+                # is the canonical literal for a policy-side termination;
+                # this lane wires it for cycle-detection only per the
+                # GO direction's locked rule "approved for F4 only".
+                terminal_reason = "policy_denial_terminal"
+                break
 
             if terminal_due_to_retry:
                 terminal_reason = "retry_exhausted"

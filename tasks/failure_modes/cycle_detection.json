@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "scenario_id": "cycle_detection",
+  "scenario_class": "F4",
+  "variant": "default",
+  "question": "Repeat the same (tool, args) pair beyond cycle_detection.max_repeats.",
+  "canned_llm_tool_calls": [
+    { "step_index": 0, "tool": "search", "args": { "query": "looping_query" } },
+    { "step_index": 1, "tool": "search", "args": { "query": "looping_query" } },
+    { "step_index": 2, "tool": "search", "args": { "query": "looping_query" } },
+    { "step_index": 3, "tool": "search", "args": { "query": "looping_query" } }
+  ],
+  "stub_behavior": null,
+  "expected": {
+    "failure_mode": "cycle_detection",
+    "terminal_reason": "policy_denial_terminal",
+    "policy_rule_id": "cycle_detection",
+    "trigger_step_index": 3
+  }
+}

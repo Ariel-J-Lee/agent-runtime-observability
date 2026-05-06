@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "scenario_id": "retry_exhaustion",
+  "scenario_class": "F2",
+  "variant": "default",
+  "question": "Fetch a permanently-broken URL; bounded retry exhausts after max_retries.",
+  "canned_llm_tool_calls": [
+    { "step_index": 0, "tool": "fetch", "args": { "url": "https://fixtures.local/always-fails" } }
+  ],
+  "stub_behavior": {
+    "tool": "fetch",
+    "mode": "always_fail"
+  },
+  "expected": {
+    "failure_mode": "retry_exhaustion",
+    "terminal_reason": "retry_exhausted",
+    "exception_class": "RetryExhausted"
+  }
+}

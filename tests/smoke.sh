@@ -43,11 +43,11 @@ for f in "${REQUIRED_FILES[@]}"; do
 done
 
 # The src/runtime/*.py modules graduated from v0 placeholders to real
-# implementations in the runtime-skeleton slice; only the trace exporter
-# and failure-mode catalog still ship as v0 stubs at this commit.
+# implementations in the runtime-skeleton slice; src/fail/catalog.py
+# graduated in the failure-mode slice. Only the trace exporter still
+# ships as a v0 stub at this commit.
 STUB_FILES=(
   src/tracing/otel_exporter.py
-  src/fail/catalog.py
 )
 
 for f in "${STUB_FILES[@]}"; do

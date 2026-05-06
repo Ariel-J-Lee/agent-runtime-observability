@@ -25,7 +25,7 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Iterator, Optional
 
 
 @dataclass
@@ -45,6 +45,13 @@ class StateRecord:
     policy_decisions: list[dict[str, Any]] = field(default_factory=list)
     tool_results: list[dict[str, Any]] = field(default_factory=list)
     errors: list[dict[str, Any]] = field(default_factory=list)
+    # The catalogued failure mode (if any) the agent loop classified for
+    # this step; one of the five locked modes from
+    # :mod:`src.fail.catalog` or ``None`` when no classified failure
+    # occurred. Set by the agent loop on the offending step record so
+    # the same value can flow into the ``agent.failure_mode`` span
+    # attribute when the trace exporter reads the ledger.
+    failure_mode: Optional[str] = None
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable dict for one ledger line."""

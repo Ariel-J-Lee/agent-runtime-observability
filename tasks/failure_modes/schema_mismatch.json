@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "scenario_id": "schema_mismatch",
+  "scenario_class": "F3",
+  "variant": "default",
+  "question": "Call a registered tool with arguments that fail its input JSON-schema.",
+  "canned_llm_tool_calls": [
+    { "step_index": 0, "tool": "search", "args": { "query": 12345 } }
+  ],
+  "stub_behavior": null,
+  "expected": {
+    "failure_mode": "schema_mismatch",
+    "terminal_reason": "final_answer",
+    "policy_rule_id": "arg_schema"
+  }
+}
