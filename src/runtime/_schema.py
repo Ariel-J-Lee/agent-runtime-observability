@@ -10,6 +10,8 @@ Covers the keyword subset the project actually uses:
 - ``enum`` (literal allowlist)
 - ``minLength`` / ``maxLength`` (string length bounds)
 - ``minimum`` / ``maximum`` (numeric bounds)
+- ``pattern`` (regex match for strings; required by the OTLP subset
+  schema's hex-string format pinning for traceId / spanId)
 
 This validator serves two callers:
 
@@ -37,6 +39,7 @@ Public surface:
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Any, Mapping
 
@@ -118,6 +121,11 @@ def _validate(value: Any, schema: Mapping[str, Any], *, path: str) -> None:
             raise SchemaError(
                 path=path,
                 message=f"string length {len(value)} above maxLength {schema['maxLength']}",
+            )
+        if "pattern" in schema and not re.search(schema["pattern"], value):
+            raise SchemaError(
+                path=path,
+                message=f"string {value!r} does not match pattern {schema['pattern']!r}",
             )
 
     if isinstance(value, (int, float)) and not isinstance(value, bool):
