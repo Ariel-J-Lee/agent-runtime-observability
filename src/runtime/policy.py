@@ -234,14 +234,15 @@ class PolicyChecker:
     the call's arguments. Returns a :class:`PolicyDecision` carrying
     the ``policy_check`` span metadata.
 
-    Rule evaluation order (first-deny wins):
+    Rule evaluation order (first-deny wins, locked by the canonical
+    plan §1.6):
 
     1. ``tool_registry.denied`` — explicit denylist
     2. ``tool_registry.allowed`` — when present, only listed tools allowed
-    3. ``arg_schema`` — when ``arg_schema_enforcement == "strict"`` and
+    3. ``url_allowlist`` — for tools whose args carry ``url``
+    4. ``sandbox.path_template`` — for tools whose args carry ``path``
+    5. ``arg_schema`` — when ``arg_schema_enforcement == "strict"`` and
        a tool schema is registered, validate args
-    4. ``url_allowlist`` — for tools whose args carry ``url``
-    5. ``sandbox.path_template`` — for tools whose args carry ``path``
 
     Loop-budget and cycle-detection rules fire on the agent step
     boundary via :meth:`check_loop_budget` and :meth:`check_cycle` and
@@ -329,26 +330,7 @@ class PolicyChecker:
                 },
             )
 
-        # 3. arg_schema (strict-mode only; only when tool has a schema)
-        enforcement = self.spec.get("arg_schema_enforcement", "off")
-        if enforcement == "strict" and tool_name in self.tool_schemas:
-            from src.runtime._schema import SchemaError, validate
-
-            try:
-                validate(dict(tool_args) if isinstance(tool_args, Mapping) else tool_args,
-                         self.tool_schemas[tool_name])
-            except SchemaError as exc:
-                return PolicyDecision(
-                    decision=DEFAULT_DECISION_DENY,
-                    rule_id="arg_schema",
-                    metadata={
-                        "policy.tool": tool_name,
-                        "policy.schema_error": exc.message,
-                        "policy.failed_path": exc.path,
-                    },
-                )
-
-        # 4. URL allowlist
+        # 3. URL allowlist
         url = tool_args.get("url") if isinstance(tool_args, Mapping) else None
         if url is not None:
             url_allowlist = self.spec.get("url_allowlist", None)
@@ -365,7 +347,7 @@ class PolicyChecker:
                         },
                     )
 
-        # 5. Sandbox path
+        # 4. Sandbox path
         path_arg = (
             tool_args.get("path") if isinstance(tool_args, Mapping) else None
         )
@@ -382,6 +364,25 @@ class PolicyChecker:
                         "policy.target_path": str(path_arg),
                         "policy.resolved_path": str(real),
                         "policy.sandbox_root": str(self.sandbox_root),
+                    },
+                )
+
+        # 5. arg_schema (strict-mode only; only when tool has a schema)
+        enforcement = self.spec.get("arg_schema_enforcement", "off")
+        if enforcement == "strict" and tool_name in self.tool_schemas:
+            from src.runtime._schema import SchemaError, validate
+
+            try:
+                validate(dict(tool_args) if isinstance(tool_args, Mapping) else tool_args,
+                         self.tool_schemas[tool_name])
+            except SchemaError as exc:
+                return PolicyDecision(
+                    decision=DEFAULT_DECISION_DENY,
+                    rule_id="arg_schema",
+                    metadata={
+                        "policy.tool": tool_name,
+                        "policy.schema_error": exc.message,
+                        "policy.failed_path": exc.path,
                     },
                 )
 
