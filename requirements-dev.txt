@@ -1,0 +1,10 @@
+# Development / test dependencies.
+#
+# The runtime modules under src/runtime/ are pure standard library and
+# need no third-party runtime dependency. This file lists tooling
+# reviewers install to run the test suite. Runtime dependencies (e.g.,
+# pyyaml when the policy YAML reader is exercised, the eventual trace
+# exporter) land in a separate requirements.txt as the corresponding
+# slices ship.
+
+pytest==8.3.4
