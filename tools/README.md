@@ -32,7 +32,6 @@ from tools import TOOL_SCHEMAS, default_registry
 policy_spec = PolicySpec.from_yaml_path("policy/v1.yaml")
 checker = PolicyChecker(policy_spec, tool_schemas=TOOL_SCHEMAS, sandbox_root=...)
 agent = Agent(
-    name="demo",
     llm=...,
     tool_registry=default_registry(corpus={"doc-1": "..."}),
     policy_checker=checker,
