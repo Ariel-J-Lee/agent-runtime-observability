@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "scenario_id": "canonical_v1",
+  "scenario_class": "CANONICAL",
+  "variant": "default",
+  "question": "What does the Operator-A3 report say about its cadence review?",
+  "canned_llm_tool_calls": [
+    {
+      "step_index": 0,
+      "tool": "search",
+      "args": {"query": "cadence"}
+    },
+    {
+      "step_index": 1,
+      "tool": "fetch",
+      "args": {"url": "{{corpus_url:op-a3}}"}
+    },
+    {
+      "step_index": 2,
+      "tool": "read",
+      "args": {"path": "{{corpus_path:op-a3}}"}
+    },
+    {
+      "step_index": 3,
+      "tool": "summarize",
+      "args": {
+        "text": "Operator-A3 cadence review continues at the established interval, aligned with the regional cadence council.",
+        "max_sentences": 2
+      }
+    },
+    {
+      "step_index": 4,
+      "final_answer": "Operator-A3's report describes a cadence review on the standard interval, aligned with the regional cadence council."
+    }
+  ],
+  "expected": {
+    "terminal_reason": "final_answer",
+    "policy_decisions": "all_allow",
+    "failure_modes": [],
+    "tool_call_sequence": ["search", "fetch", "read", "summarize"]
+  }
+}

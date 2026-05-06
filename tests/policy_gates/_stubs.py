@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping, Sequence
 
-from src.runtime import LLMInput, LLMOutput, ToolCall
+from src.runtime.stub_llm.canned import make_canned_llm as _canonical_make_canned_llm
 
 
 # ---------------------------------------------------------------------------
@@ -117,29 +117,15 @@ STUB_TOOL_REGISTRY: dict[str, Any] = {
 
 
 def make_canned_llm(canned_tool_calls: Sequence[Mapping[str, Any]]):
-    """Return an LLM callable that emits ``canned_tool_calls`` one per step.
+    """Thin shim re-exporting the canonical stub LLM.
 
-    Each canned entry has shape ``{"step_index": int, "tool": str,
-    "args": dict, "tokens"?: int}``. The LLM emits a single tool call per
-    step and never emits a terminal ``final_answer`` until the canned
-    list is exhausted (then signals "no answer reached"). For loop-budget
-    tests the canned list is intentionally longer than the budget; for
-    other tests the canned list ends with the trigger step and the loop
-    terminates due to policy denial.
-
-    The optional ``tokens`` field on each entry surfaces in the
-    ``LLMOutput.raw_text`` as a token count marker the test driver can
-    pass into the agent's loop-budget checker (the current ``Agent``
-    doesn't propagate token counts; tests for the tokens variant drive
-    ``PolicyChecker.check_loop_budget(tokens=...)`` directly).
+    The canonical implementation lives at
+    :func:`src.runtime.stub_llm.canned.make_canned_llm` (PACKET-053
+    graduated the helper out of test-only into the runtime package).
+    Existing PG/FM fixtures use canned entries shaped
+    ``{"step_index": int, "tool": str, "args": dict}`` — fully
+    compatible with the canonical implementation, so this shim adds
+    no behavior of its own. Existing tests continue to import
+    ``make_canned_llm`` from this module unchanged.
     """
-    by_step = {entry["step_index"]: entry for entry in canned_tool_calls}
-
-    def _llm(inp: LLMInput) -> LLMOutput:
-        entry = by_step.get(inp.step_index)
-        if entry is None:
-            return LLMOutput(final_answer="(no canned step for this index)", raw_text="")
-        tc = ToolCall(tool=entry["tool"], args=dict(entry.get("args") or {}))
-        return LLMOutput(intended_tool_calls=(tc,), raw_text=str(entry))
-
-    return _llm
+    return _canonical_make_canned_llm(canned_tool_calls)

@@ -1,4 +1,4 @@
-.PHONY: help smoke smoke-runtime trace-smoke tool-smoke canonical policy-gates failure-modes regression
+.PHONY: help smoke smoke-runtime trace-smoke tool-smoke fixture-build canonical policy-gates failure-modes regression
 
 help:
 	@echo "agent-runtime-observability — v0 controlled scaffold"
@@ -10,7 +10,8 @@ help:
 	@echo "  failure-modes run the failure-mode scenario tests; SCENARIO=<id> selects one (requires 'pip install -r requirements.txt requirements-dev.txt')"
 	@echo "  trace-smoke   drive the in-tree trace fixture through the OTLP-JSON exporter and validate against the subset schema (requires 'pip install -r requirements.txt')"
 	@echo "  tool-smoke    drive the five v1 tools through a real Agent.run with strict-mode arg_schema enforcement (requires 'pip install -r requirements.txt')"
-	@echo "  canonical     placeholder; lands at Tier 4 in a future implementation packet"
+	@echo "  fixture-build (re)build the deterministic fixture corpus under data/corpus/v1/ from the documented seed; --check verifies on-disk files match the manifest"
+	@echo "  canonical     drive the canonical task fixture through a real Agent.run against the fixture corpus and the v1 tool, policy, and trace surfaces (requires 'pip install -r requirements.txt')"
 	@echo "  regression    placeholder; lands at Tier 4 in a future implementation packet"
 
 smoke:
@@ -25,9 +26,11 @@ trace-smoke:
 tool-smoke:
 	@python3 -m scripts.run_tool_smoke
 
+fixture-build:
+	@python3 -m scripts.build_fixture_corpus
+
 canonical:
-	@echo "v0 scaffold; arrives at Tier-4 in a future implementation packet."
-	@exit 1
+	@python3 -m scripts.run_canonical_smoke
 
 policy-gates:
 ifdef SCENARIO

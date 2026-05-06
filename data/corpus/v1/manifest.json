@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0",
+  "seed": 20260506,
+  "generator_path": "scripts/build_fixture_corpus.py",
+  "doc_count": 25,
+  "files": [
+    {
+      "id": "op-a1",
+      "path": "data/corpus/v1/op-a1.md",
+      "sha256": "56706cd1c8496d26e3c4088461d702421b129816ca988b60ad8891516bddd473",
+      "char_count": 826
+    },
+    {
+      "id": "op-a2",
+      "path": "data/corpus/v1/op-a2.md",
+      "sha256": "3eff1d1ff1ecbb1d48e280f9c6f390c6de370a45ef32da13145af91cf8d27552",
+      "char_count": 795
+    },
+    {
+      "id": "op-a3",
+      "path": "data/corpus/v1/op-a3.md",
+      "sha256": "45c9a0e9db93cfc25b550c27ea55bed08705fdd094658510492608d5bef0bb91",
+      "char_count": 846
+    },
+    {
+      "id": "op-a4",
+      "path": "data/corpus/v1/op-a4.md",
+      "sha256": "632cde4f64f16ed46f86e11952f15479f6c10920315f9893ea8b934d0540fdfc",
+      "char_count": 762
+    },
+    {
+      "id": "op-a5",
+      "path": "data/corpus/v1/op-a5.md",
+      "sha256": "171c581fdbb6a51bbfab02c882cc52838f38401d3bd75867582f34f7f2a92325",
+      "char_count": 845
+    },
+    {
+      "id": "op-a6",
+      "path": "data/corpus/v1/op-a6.md",
+      "sha256": "c20ff37a7f89ee1f96493d8f14aec0f2f93a7f1371ab546a6a49187f95bc4a35",
+      "char_count": 846
+    },
+    {
+      "id": "op-a7",
+      "path": "data/corpus/v1/op-a7.md",
+      "sha256": "29b1479a6141419d05843f216d6ab4cfd446aaebf72062ffc7da68e249b14b4a",
+      "char_count": 752
+    },
+    {
+      "id": "op-a8",
+      "path": "data/corpus/v1/op-a8.md",
+      "sha256": "62085441d591a97aefe48d10defd077441817b28d12db892cf51b6784489fe54",
+      "char_count": 861
+    },
+    {
+      "id": "op-a9",
+      "path": "data/corpus/v1/op-a9.md",
+      "sha256": "cd759dbf3b3ab9267d4c720f87f4ba08205be43fbd2434052ee9b797c671ec61",
+      "char_count": 792
+    },
+    {
+      "id": "op-a10",
+      "path": "data/corpus/v1/op-a10.md",
+      "sha256": "4fbd1cff4fffb729e66532b87081d2ba374a808e178a72c530a833a033a55210",
+      "char_count": 823
+    },
+    {
+      "id": "op-a11",
+      "path": "data/corpus/v1/op-a11.md",
+      "sha256": "feefe74b0be2c29173288c6679372c76b25b2b82158e24277c05944189bd78e9",
+      "char_count": 759
+    },
+    {
+      "id": "op-a12",
+      "path": "data/corpus/v1/op-a12.md",
+      "sha256": "c88876f4cc7823a450885e65036a5f40c682ed08e675e891eb7652be311be8a3",
+      "char_count": 838
+    },
+    {
+      "id": "op-a13",
+      "path": "data/corpus/v1/op-a13.md",
+      "sha256": "39960bdef91c54037192a649ca9349fa8dd2f596a614632a0df8bfd224a61bc4",
+      "char_count": 779
+    },
+    {
+      "id": "op-a14",
+      "path": "data/corpus/v1/op-a14.md",
+      "sha256": "b6b11384dd3aa1efad0fde5ebec638da34863e3c60589a3887595d038d732fd1",
+      "char_count": 808
+    },
+    {
+      "id": "op-a15",
+      "path": "data/corpus/v1/op-a15.md",
+      "sha256": "5f79359dfc664e1ca6543225a62528d385e19dc733d668823a27ba1b6d9cd886",
+      "char_count": 749
+    },
+    {
+      "id": "op-a16",
+      "path": "data/corpus/v1/op-a16.md",
+      "sha256": "54aa301c3be4504b9c80dfdd9b8bc2f997c9bd5573f8cea9dc48f9d7c12acafa",
+      "char_count": 825
+    },
+    {
+      "id": "op-a17",
+      "path": "data/corpus/v1/op-a17.md",
+      "sha256": "a77d04fb8c69bde30fe193b3f85b80ec8015b86c1644893d2e0c5d8fd5595ff2",
+      "char_count": 805
+    },
+    {
+      "id": "op-a18",
+      "path": "data/corpus/v1/op-a18.md",
+      "sha256": "a3edde7b29a3d07a7d508d01b18e5a2208c01b44cde72e5ffd518608a4076a03",
+      "char_count": 761
+    },
+    {
+      "id": "op-a19",
+      "path": "data/corpus/v1/op-a19.md",
+      "sha256": "d9e3d88843e4fb31203f900bf1427cf9886ed92209c253f200102e873db239a7",
+      "char_count": 803
+    },
+    {
+      "id": "op-a20",
+      "path": "data/corpus/v1/op-a20.md",
+      "sha256": "b622618643f6e51f9e6a995f2e1867fbb077cf06065290aca4f83f6d1d5726dc",
+      "char_count": 791
+    },
+    {
+      "id": "op-a21",
+      "path": "data/corpus/v1/op-a21.md",
+      "sha256": "f64aa11f7bde06fe0b7b7e7689e9723e8171c174eb325385c9464a7f744fc853",
+      "char_count": 845
+    },
+    {
+      "id": "op-a22",
+      "path": "data/corpus/v1/op-a22.md",
+      "sha256": "dcf9d07365e0b3f24b46e6f3086d1d3dc7b06764dfad43637ef56fa1e4a1778b",
+      "char_count": 801
+    },
+    {
+      "id": "op-a23",
+      "path": "data/corpus/v1/op-a23.md",
+      "sha256": "a6d691e9b031c195150ef52a37f9fc8db8f87aaefc4f2d20a7be45d0a5da54a4",
+      "char_count": 808
+    },
+    {
+      "id": "op-a24",
+      "path": "data/corpus/v1/op-a24.md",
+      "sha256": "ff95426f94ff3f31baea738dc3ab88492097d722655d753175b1f17bcf652485",
+      "char_count": 853
+    },
+    {
+      "id": "op-a25",
+      "path": "data/corpus/v1/op-a25.md",
+      "sha256": "11166aead44d02313f430439b722d8a060e7fe52a8615628903a06a9ec317cc9",
+      "char_count": 780
+    }
+  ]
+}

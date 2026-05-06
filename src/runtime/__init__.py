@@ -43,10 +43,12 @@ from src.runtime.retry import (
     bounded_retry,
 )
 from src.runtime.state import StateLedger, StateRecord
+from src.runtime.stub_llm.canned import CannedLLM, make_canned_llm
 
 __all__ = [
     "Agent",
     "AgentResult",
+    "CannedLLM",
     "LLMInput",
     "LLMOutput",
     "PermissivePolicyChecker",
@@ -61,4 +63,5 @@ __all__ = [
     "StateRecord",
     "ToolCall",
     "bounded_retry",
+    "make_canned_llm",
 ]
