@@ -137,6 +137,7 @@ def _emit_one(*, scenario: str, out_root: Path,
     run_dir = out_root / scenario
     emit_run(
         run_dir=run_dir,
+        repo_root=_REPO_ROOT,
         agent_result=result,
         exporter=exporter,
         spans=spans,

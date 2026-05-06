@@ -13,7 +13,11 @@ single-entry-point ``emit_run`` so the three captured-run emitters
 ``scripts/run_failure_modes.py``) share one code path.
 """
 
-from src.evidence.emit import emit_run
+from src.evidence.emit import (
+    REPO_TOKEN,
+    emit_run,
+    normalize_in_repo_paths,
+)
 from src.evidence.manifest import (
     DETERMINISTIC_TIME_START_NS,
     EXCLUDED_FROM_REPRODUCIBILITY_DIFF,
@@ -34,6 +38,7 @@ __all__ = [
     "DETERMINISTIC_TIME_START_NS",
     "EXCLUDED_FROM_REPRODUCIBILITY_DIFF",
     "POLICY_VERSION_PREFIX_LEN",
+    "REPO_TOKEN",
     "RUN_ID_DATE",
     "RUN_ID_POLICY_PREFIX_LEN",
     "compute_corpus_snapshot_id",
@@ -42,6 +47,7 @@ __all__ = [
     "compute_run_id_policy_prefix",
     "deterministic_time_source",
     "emit_run",
+    "normalize_in_repo_paths",
     "render_run_report",
     "sha256_bytes",
     "sha256_file",

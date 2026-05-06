@@ -15,7 +15,7 @@
     "version": "a501847f03e2"
   },
   "code": {
-    "git_sha": "b98174a2a92e8d6c102cc050a5022a55b2898184",
+    "git_sha": "dd79d49a0d8ad1e15269d003ae8ec2d3bf6acec3",
     "tracing_subset_schema_sha256": "ecf51edb8ffc51420cfc92b20608c36e436e6404576978b7ee8acb544e176526"
   },
   "llm": {

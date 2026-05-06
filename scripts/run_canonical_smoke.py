@@ -221,6 +221,7 @@ def _emit(*, out_root: Path | None = None) -> int:
 
     emit_run(
         run_dir=target,
+        repo_root=_REPO_ROOT,
         agent_result=result,
         exporter=exporter,
         spans=spans,
