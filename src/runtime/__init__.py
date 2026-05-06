@@ -34,6 +34,7 @@ from src.runtime.policy import (
     PolicyChecker,
     PolicyDecision,
     PolicySpec,
+    PolicyValidationError,
 )
 from src.runtime.retry import (
     RetryAttemptRecord,
@@ -52,6 +53,7 @@ __all__ = [
     "PolicyChecker",
     "PolicyDecision",
     "PolicySpec",
+    "PolicyValidationError",
     "RetryAttemptRecord",
     "RetryExhausted",
     "RetryResult",

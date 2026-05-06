@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "scenario_id": "pg3_loop_budget",
+  "scenario_class": "PG3",
+  "variant": "iterations",
+  "question": "Iterate forever without producing a final answer.",
+  "canned_llm_tool_calls": [
+    { "step_index": 0, "tool": "search", "args": { "query": "step 0" } },
+    { "step_index": 1, "tool": "search", "args": { "query": "step 1" } },
+    { "step_index": 2, "tool": "search", "args": { "query": "step 2" } },
+    { "step_index": 3, "tool": "search", "args": { "query": "step 3" } },
+    { "step_index": 4, "tool": "search", "args": { "query": "step 4" } },
+    { "step_index": 5, "tool": "search", "args": { "query": "step 5" } },
+    { "step_index": 6, "tool": "search", "args": { "query": "step 6" } },
+    { "step_index": 7, "tool": "search", "args": { "query": "step 7" } },
+    { "step_index": 8, "tool": "search", "args": { "query": "step 8" } },
+    { "step_index": 9, "tool": "search", "args": { "query": "step 9" } },
+    { "step_index": 10, "tool": "search", "args": { "query": "step 10" } },
+    { "step_index": 11, "tool": "search", "args": { "query": "step 11" } }
+  ],
+  "expected": {
+    "decision": "deny",
+    "rule_id": "loop_budget",
+    "policy_metadata_keys": ["policy.iterations", "policy.max_iterations", "policy.limit_kind"],
+    "trigger_step_index": 10,
+    "terminal_reason": "loop_budget_exhausted"
+  },
+  "sandbox_root_setup": null
+}

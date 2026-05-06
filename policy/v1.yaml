@@ -1,0 +1,48 @@
+# agent-runtime-observability v1 policy spec.
+# See policy/v1.schema.json for the meta-schema and the loader's
+# self-validation contract. Loaded by src.runtime.PolicySpec.from_yaml_path
+# and consulted on every tool call by PolicyChecker.
+
+# Tool registry. Allowlisted tools accepted by PolicyChecker.check();
+# unregistered tools deny with rule_id="tool_registry".
+tool_registry:
+  allowed:
+    - search
+    - fetch
+    - read
+    - write
+    - summarize
+  denied: []
+
+# Hostnames or full URLs accepted for fetch-shape calls.
+url_allowlist:
+  - fixtures.local
+  - agent-runtime-observability.test
+
+# Per-run sandbox. The runtime expands <run-id> and ${TMPDIR} (with
+# /tmp fallback) at agent construction time. Tool calls whose target
+# path resolves outside the sandbox deny with rule_id="sandbox_path".
+sandbox:
+  path_template: "${TMPDIR:-/tmp}/agent-runtime-observability/<run-id>/sandbox"
+
+# Strict mode validates each tool call's args against the tool's
+# input JSON-schema before evaluating url_allowlist / sandbox_path.
+arg_schema_enforcement: strict
+
+# Loop budget. Reaching either limit denies with rule_id="loop_budget".
+loop_budget:
+  max_iterations: 10
+  max_tokens: 50000
+
+# Cycle detection. A (tool, normalized_args) pair repeated more than
+# this many times in one run denies with rule_id="cycle_detection".
+cycle_detection:
+  max_repeats: 3
+
+# Retry policy consumed by src.runtime.bounded_retry. Backoff is
+# deterministic given the seed: backoff_ms = min(base * 2^(attempt-1), cap)
+# with deterministic +/-20% jitter from the seed.
+retry:
+  max_retries: 3
+  backoff_base_ms: 100
+  backoff_cap_ms: 2000

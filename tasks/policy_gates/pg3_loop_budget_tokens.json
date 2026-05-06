@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "scenario_id": "pg3_loop_budget_tokens",
+  "scenario_class": "PG3",
+  "variant": "tokens",
+  "question": "Burn through the token budget before finishing.",
+  "canned_llm_tool_calls": [
+    { "step_index": 0, "tool": "search", "args": { "query": "step 0" }, "tokens": 30000 },
+    { "step_index": 1, "tool": "search", "args": { "query": "step 1" }, "tokens": 30000 }
+  ],
+  "expected": {
+    "decision": "deny",
+    "rule_id": "loop_budget",
+    "policy_metadata_keys": ["policy.tokens", "policy.max_tokens", "policy.limit_kind"],
+    "trigger_step_index": 2,
+    "terminal_reason": "loop_budget_exhausted"
+  },
+  "sandbox_root_setup": null
+}

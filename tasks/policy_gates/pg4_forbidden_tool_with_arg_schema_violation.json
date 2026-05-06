@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "scenario_id": "pg4_forbidden_tool_with_arg_schema_violation",
+  "scenario_class": "PG4",
+  "variant": "with_arg_schema_violation",
+  "question": "Invoke an unregistered tool whose arguments would also fail the input schema; tool_registry must win the precedence.",
+  "canned_llm_tool_calls": [
+    {
+      "step_index": 0,
+      "tool": "delete",
+      "args": {
+        "path": 12345
+      }
+    }
+  ],
+  "expected": {
+    "decision": "deny",
+    "rule_id": "tool_registry",
+    "policy_metadata_keys": [
+      "policy.requested_tool",
+      "policy.registry_match"
+    ],
+    "trigger_step_index": 0,
+    "terminal_reason": "final_answer"
+  },
+  "sandbox_root_setup": null
+}
