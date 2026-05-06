@@ -11,7 +11,7 @@ Implemented today:
 - a single-agent runtime skeleton with a JSONL state ledger and a bounded retry layer
 - a strict input-schema enforcement surface for tool calls
 - a v1 policy-gate spec with five named scenarios (off-allowlist URL, sandbox escape, iteration / token budget, forbidden tool, argument-shape violation), each verified by per-scenario tests
-- a documented failure-mode catalog with five canonical triggers (tool-call failure, retry exhaustion, policy-gate trip, schema mismatch, cycle detection), a classifier, and per-mode tests
+- a documented failure-mode catalog with five canonical modes (`tool_call_failure`, `retry_exhaustion`, `schema_mismatch`, `cycle_detection`, `catalogued_unhandled`), a classifier, and per-mode tests
 - an OTLP-JSON-subset trace exporter with a subset-schema validator and a trace-smoke surface
 - a five-tool layer (`search`, `fetch`, `read`, `write`, `summarize`) with `INPUT_SCHEMA` per tool and a tool-smoke surface
 - a synthetic 25-document fixture corpus, a canonical task fixture, and a deterministic stub LLM that drives `make canonical` end-to-end with no hosted-LLM dependency
@@ -35,7 +35,7 @@ The runtime, policy, trace, tool, and fixture slices verify the runtime / tool b
 - `make smoke` — verify file structure
 - `make smoke-runtime` — runtime-skeleton tests
 - `make policy-gates` — five named scenarios; `SCENARIO=<id>` selects one
-- `make failure-modes` — five canonical triggers; `SCENARIO=<id>` selects one
+- `make failure-modes` — exercise the five canonical modes; `SCENARIO=<id>` selects one
 - `make trace-smoke` — drive the in-tree trace fixture through the OTLP-JSON exporter and validate against the subset schema
 - `make tool-smoke` — drive the five v1 tools through a real `Agent.run` with strict-mode `arg_schema` enforcement
 - `make fixture-build` — (re)build the deterministic fixture corpus from the documented seed
@@ -73,7 +73,8 @@ make policy-gates    # all five policy-gate scenarios
 make failure-modes   # all five failure-mode triggers
 make trace-smoke     # trace exporter + subset-schema validation
 make tool-smoke      # five tools through a real Agent.run
-make fixture-build --check   # verify on-disk fixture matches manifest
+make fixture-build   # (re)build the deterministic fixture corpus from the documented seed
+python3 -m scripts.build_fixture_corpus --check   # verify on-disk fixture matches the manifest
 make canonical       # canonical task through Agent.run on the fixture corpus
 ```
 
