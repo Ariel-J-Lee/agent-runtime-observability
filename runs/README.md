@@ -1,6 +1,6 @@
 # Runs
 
-Committed captured-run artifacts from the v1 runtime. Each run carries the four PACKET-046 §3.1 artifacts:
+Committed captured-run artifacts from the v1 runtime. Each run carries four files:
 
 | File | Role |
 |---|---|
@@ -9,11 +9,17 @@ Committed captured-run artifacts from the v1 runtime. Each run carries the four 
 | `run_report.md` | Recruiter-readable headline. Setup / Outcome / Notes sections. |
 | `manifest.json` | Reproducibility envelope. Pins corpus, policy, code, stub-LLM, seed, timestamp. |
 
+## Captured runs
+
+- Canonical run: [`2026-05-06_240d1c56_0/`](./2026-05-06_240d1c56_0/) — single-agent loop walks `search → fetch → read → summarize → final_answer` end-to-end.
+- Policy-gate runs: [`policy_gates/`](./policy_gates/) — seven scenarios (`pg1_off_allowlist_url`, `pg2_sandbox_escape`, `pg3_loop_budget`, `pg3_loop_budget_tokens`, `pg4_forbidden_tool`, `pg4_forbidden_tool_with_arg_schema_violation`, `pg5_arg_schema`).
+- Failure-mode runs: [`failure_modes/`](./failure_modes/) — five canonical modes (`tool_call_failure`, `retry_exhaustion`, `schema_mismatch`, `cycle_detection`, `catalogued_unhandled`).
+
 ## Layout
 
 ```
 runs/
-├── 2026-05-06_<8-hex-policy-sha>_0/        # canonical run
+├── 2026-05-06_240d1c56_0/                                   # canonical run
 │   ├── trace.json
 │   ├── state.jsonl
 │   ├── run_report.md
@@ -22,7 +28,9 @@ runs/
 │   ├── pg1_off_allowlist_url/...
 │   ├── pg2_sandbox_escape/...
 │   ├── pg3_loop_budget/...
+│   ├── pg3_loop_budget_tokens/...
 │   ├── pg4_forbidden_tool/...
+│   ├── pg4_forbidden_tool_with_arg_schema_violation/...
 │   └── pg5_arg_schema/...
 └── failure_modes/
     ├── tool_call_failure/...
@@ -32,9 +40,9 @@ runs/
     └── catalogued_unhandled/...
 ```
 
-The canonical run directory name is `<YYYY-MM-DD>_<policy-spec-sha-prefix>_<seed>` per PACKET-046 §3.2 — sortable, deterministic given inputs, reviewer-readable. Non-canonical runs (`policy_gates/<scenario>/`, `failure_modes/<mode>/`) use the scenario / mode slug as the directory name; the full run-id lives inside `manifest.json`.
+The canonical run directory name is `<YYYY-MM-DD>_<policy-spec-sha-prefix>_<seed>` — sortable, deterministic given inputs, reviewer-readable. Non-canonical runs (`policy_gates/<scenario>/`, `failure_modes/<mode>/`) use the scenario / mode slug as the directory name; the full run-id lives inside `manifest.json`.
 
-## Reproducibility contract (PACKET-054 GO-direction)
+## Reproducibility contract
 
 Two reviewers running the emitter against the same upstream snapshot produce **byte-identical** `trace.json`, `state.jsonl`, and `run_report.md`. `manifest.json` is byte-identical except on three documented per-run-volatile keys: `timestamp`, `wall_clock_seconds`, and `code.git_sha`. Reviewers verify reproducibility with:
 
@@ -75,15 +83,9 @@ docker run --rm -p 16686:16686 jaegertracing/all-in-one:1.52
 
 The OTLP subset shipped here intentionally omits `traceState`, `flags`, `events`, `links`, `status`, and `droppedAttributesCount`. Adding those later is non-breaking for both viewers.
 
-## Documented gap: root README trace-viewer invocation
-
-PACKET-046 §1.3 #5 requires `README.md` to include a one-line trace-viewer invocation. PACKET-054's Forbidden Surface forbids root README state change. The trace-viewer invocation lives in this file (`runs/README.md`) instead. Surfacing the README link is deferred to a follow-on T-DOCS packet.
-
 ## What committed evidence does NOT claim
 
-Per PACKET-046 §1.4 + PACKET-014 §1.3 / §8:
-
 - These traces are not benchmark numbers. No latency / throughput / p95 / SLA claim is made or implied.
-- No real workflow, no real RCA, no production deployment claim.
+- No real workflow, no real root-cause analysis, no production deployment claim.
 - The corpus is synthetic (CC0-1.0); see `data/DATA-SOURCE.md`.
 - The LLM is a deterministic canned-table emitter; see `src/runtime/stub_llm/canned.py`. No live LLM is exercised.
