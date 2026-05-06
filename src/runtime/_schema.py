@@ -12,6 +12,9 @@ Covers the keyword subset the project actually uses:
 - ``minimum`` / ``maximum`` (numeric bounds)
 - ``pattern`` (regex match for strings; required by the OTLP subset
   schema's hex-string format pinning for traceId / spanId)
+- ``minProperties`` / ``maxProperties`` (object key-count bounds;
+  used by the OTLP subset schema to require exactly one supported
+  type key on each ``AnyValue``)
 
 This validator serves two callers:
 
@@ -149,6 +152,22 @@ def _validate(value: Any, schema: Mapping[str, Any], *, path: str) -> None:
                     path=_join(path, req),
                     message="required property missing",
                 )
+        if "minProperties" in schema and len(value) < schema["minProperties"]:
+            raise SchemaError(
+                path=path,
+                message=(
+                    f"object has {len(value)} properties; "
+                    f"below minProperties {schema['minProperties']}"
+                ),
+            )
+        if "maxProperties" in schema and len(value) > schema["maxProperties"]:
+            raise SchemaError(
+                path=path,
+                message=(
+                    f"object has {len(value)} properties; "
+                    f"above maxProperties {schema['maxProperties']}"
+                ),
+            )
         if schema.get("additionalProperties") is False:
             for key in value:
                 if key not in properties:

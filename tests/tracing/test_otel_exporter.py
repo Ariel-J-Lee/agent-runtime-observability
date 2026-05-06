@@ -373,6 +373,88 @@ def test_validator_rejects_missing_required_span_field():
         validate_otlp_subset(bad_doc)
 
 
+def test_validator_rejects_attribute_value_with_no_type_key():
+    """An OTLP AnyValue is a oneof over the supported type keys.
+
+    An empty ``value: {}`` carries no type key and must be rejected; a
+    prior version of ``_ATTRIBUTE_VALUE_SCHEMA`` left this open because
+    ``additionalProperties: False`` only blocks unknown keys, never
+    requires a known one.
+    """
+    bad_doc = {
+        "resourceSpans": [
+            {
+                "resource": {
+                    "attributes": [
+                        {"key": "service.name", "value": {"stringValue": "x"}},
+                    ],
+                },
+                "scopeSpans": [
+                    {
+                        "scope": {"name": "x"},
+                        "spans": [
+                            {
+                                "traceId": "0" * 32,
+                                "spanId": "0" * 16,
+                                "name": "agent_step",
+                                "kind": 1,
+                                "startTimeUnixNano": "0",
+                                "endTimeUnixNano": "0",
+                                "attributes": [
+                                    {"key": "agent.run_id", "value": {}},
+                                ],
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    with pytest.raises(SchemaError):
+        validate_otlp_subset(bad_doc)
+
+
+def test_validator_rejects_attribute_value_with_multiple_type_keys():
+    """An AnyValue with two type keys violates the oneof shape."""
+    bad_doc = {
+        "resourceSpans": [
+            {
+                "resource": {
+                    "attributes": [
+                        {"key": "service.name", "value": {"stringValue": "x"}},
+                    ],
+                },
+                "scopeSpans": [
+                    {
+                        "scope": {"name": "x"},
+                        "spans": [
+                            {
+                                "traceId": "0" * 32,
+                                "spanId": "0" * 16,
+                                "name": "agent_step",
+                                "kind": 1,
+                                "startTimeUnixNano": "0",
+                                "endTimeUnixNano": "0",
+                                "attributes": [
+                                    {
+                                        "key": "agent.run_id",
+                                        "value": {
+                                            "stringValue": "r",
+                                            "intValue": "5",
+                                        },
+                                    },
+                                ],
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    with pytest.raises(SchemaError):
+        validate_otlp_subset(bad_doc)
+
+
 def test_validator_accepts_well_formed_doc_from_real_exporter():
     """Driven exporter output validates without raising."""
     exporter = OtelJsonExporter(seed=0)
