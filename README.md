@@ -12,7 +12,7 @@ Seven policy-gate runs under [`runs/policy_gates/`](./runs/policy_gates/) and fi
 
 | Capability | Captured run | Trace signature |
 |---|---|---|
-| Canonical demo task — single-agent loop reaches a final answer | [`runs/2026-05-06_240d1c56_0/run_report.md`](./runs/2026-05-06_240d1c56_0/run_report.md) | `agent_step` ×5, `llm_call` ×5, `tool_call` ×4, `policy_check` ×4 (all allow); terminal `final_answer` |
+| Canonical demo task — single-agent loop reaches a final answer | [`runs/2026-05-06_240d1c56_0/run_report.md`](./runs/2026-05-06_240d1c56_0/run_report.md) | `agent_step` ×5, `llm_call` ×5, `tool_call` ×4, `policy_check` ×4 (all allow), `retry_attempt` ×4 (all success); terminal `final_answer` |
 | **Policy gates that deny unsafe tool calls** | | |
 | Off-allowlist URL (PG1) | [`runs/policy_gates/pg1_off_allowlist_url/run_report.md`](./runs/policy_gates/pg1_off_allowlist_url/run_report.md) | `policy_check` deny; `agent.policy.rule_id = url_allowlist`; terminates after deny |
 | Sandbox escape (PG2) | [`runs/policy_gates/pg2_sandbox_escape/run_report.md`](./runs/policy_gates/pg2_sandbox_escape/run_report.md) | `policy_check` deny; `agent.policy.rule_id = sandbox_path`; terminates after deny |
@@ -30,7 +30,7 @@ Seven policy-gate runs under [`runs/policy_gates/`](./runs/policy_gates/) and fi
 
 ## Headline summary
 
-The canonical run (`2026-05-06_240d1c56_0`) executes 5 agent steps with 4 tool calls and 0 retries, emits 17 trace spans, and terminates with `final_answer` against the 25-document synthetic fixture corpus. Of the five named policy-gate scenarios, **four (PG1, PG2, PG4, PG5) fire deny spans with the documented `rule_id` set in the trace**; PG3 (loop budget; both iteration and token-budget variants) terminates via `agent.terminal_reason = loop_budget` rather than a deny span — a documented runtime gap surfaced in [`runs/policy_gates/pg3_loop_budget/run_report.md`](./runs/policy_gates/pg3_loop_budget/run_report.md). All five canonical failure modes fire `agent.failure_mode` on the offending step and reach their documented terminal state. Numbers and structural facts come from the captured `run_report.md` and `manifest.json` files; nothing in this prose claims more than those files support.
+The canonical run (`2026-05-06_240d1c56_0`) executes 5 agent steps with 4 tool calls and 4 retry attempts (0 exhausted; all retries succeeded), emits 22 trace spans (`agent_step` ×5, `llm_call` ×5, `tool_call` ×4, `policy_check` ×4, `retry_attempt` ×4), and terminates with `final_answer` against the 25-document synthetic fixture corpus. Of the five named policy-gate scenarios, **four (PG1, PG2, PG4, PG5) fire deny spans with the documented `rule_id` set in the trace**; PG3 (loop budget; both iteration and token-budget variants) terminates via `agent.terminal_reason = loop_budget` rather than a deny span — a documented runtime gap surfaced in [`runs/policy_gates/pg3_loop_budget/run_report.md`](./runs/policy_gates/pg3_loop_budget/run_report.md). All five canonical failure modes fire `agent.failure_mode` on the offending step and reach their documented terminal state. Numbers and structural facts come from the captured `run_report.md` and `manifest.json` files; nothing in this prose claims more than those files support.
 
 ## Verification surface
 
@@ -98,7 +98,7 @@ The canonical run is deterministic given the pinned seed, the deterministic stub
 
 This is a first runnable proof, not a benchmark.
 
-- **Deterministic stub LLM canonical default.** The committed runs use a deterministic stub LLM (`src/runtime/stub_llm/`) keyed by the canonical fixture. Live local-LLM and hosted-API paths are documented and runnable but opt-in only; they are not part of the captured-run surface.
+- **Deterministic stub LLM canonical default.** The committed runs use a deterministic stub LLM at [`src/runtime/stub_llm/canned.py`](./src/runtime/stub_llm/canned.py), keyed by the canonical fixture. The `Agent` constructor accepts a `Callable[[LLMInput], LLMOutput]` seam, so a caller can plug in a live local-LLM or hosted-API adapter that satisfies that shape. **No live local-LLM or hosted-API adapter ships in this release**; the captured-run surface uses the stub default exclusively.
 - **Synthetic public-safe fixture corpus.** Twenty-five hand-authored CC0-1.0 documents under `data/corpus/v1/`. The runtime is exercised against these only; results do not generalize beyond this corpus.
 - **Single-agent only at v1.** No multi-agent coordination. Multi-agent claims do not appear anywhere in this README, `docs/`, or the repo description.
 - **Filesystem-path-based sandbox.** Sandbox isolation is `realpath`-based against an allowlisted per-run directory. Not container-isolated and not capability-restricted at v1.

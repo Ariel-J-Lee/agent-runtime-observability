@@ -6,7 +6,7 @@ For the live demonstration, see [`runs/2026-05-06_240d1c56_0/run_report.md`](../
 
 ## Required components
 
-1. **LLM** — one local LLM provides reasoning. Local-first (Ollama-shape). Hosted-API integration is opt-in only. The canonical run uses a deterministic stub LLM at [`src/runtime/stub_llm/`](../src/runtime/stub_llm/).
+1. **LLM** — the runtime calls one LLM for reasoning. The canonical run uses a deterministic stub LLM at [`src/runtime/stub_llm/`](../src/runtime/stub_llm/). The `Agent` constructor accepts a `Callable[[LLMInput], LLMOutput]` seam so a caller can plug in a live local-LLM (e.g. Ollama-shape) or hosted-API adapter that satisfies that shape; no such adapter ships at v1.
 2. **Tool surface** — a small fixed set of tools with JSON-schema input/output contracts: [`tools/search.py`](../tools/search.py), [`tools/fetch.py`](../tools/fetch.py), [`tools/read.py`](../tools/read.py), [`tools/write.py`](../tools/write.py), [`tools/summarize.py`](../tools/summarize.py).
 3. **Policy / guardrail layer** — sits between LLM tool intent and tool execution. Declarative policy spec ([`policy/v1.yaml`](../policy/v1.yaml)) validated against a JSON meta-schema ([`policy/v1.schema.json`](../policy/v1.schema.json)) at startup. Rules check tool name, arguments, and runtime context against allowlist / blocklist before execution. Deny events are first-class trace spans. Implementation at [`src/runtime/policy.py`](../src/runtime/policy.py).
 4. **State management** — per-step state record (LLM input, LLM output, intended tool calls, policy decisions, tool results, errors) persisted as JSONL. The committed `state.jsonl` is rerunnable. Implementation at [`src/runtime/state.py`](../src/runtime/state.py).

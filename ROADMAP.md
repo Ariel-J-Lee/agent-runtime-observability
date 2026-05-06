@@ -6,7 +6,7 @@
 
 The v1 implementation includes all seven components of a single-agent governed runtime:
 
-1. **LLM** — local-first; hosted opt-in only. The canonical run uses a deterministic stub LLM at [`src/runtime/stub_llm/`](./src/runtime/stub_llm/).
+1. **LLM** — the runtime calls one LLM for reasoning. The canonical run uses a deterministic stub LLM at [`src/runtime/stub_llm/`](./src/runtime/stub_llm/). The `Agent` constructor exposes a `Callable[[LLMInput], LLMOutput]` seam for a caller-supplied live-LLM or hosted-API adapter; no such adapter ships at v1.
 2. **Tool surface** — five tools with JSON-schema input/output contracts at [`tools/`](./tools/).
 3. **Policy / guardrail layer** — declarative rules with deny events as first-class trace spans. Spec at [`policy/v1.yaml`](./policy/v1.yaml).
 4. **State management** — per-step JSONL state record, rerunnable. Implementation at [`src/runtime/state.py`](./src/runtime/state.py).
@@ -56,11 +56,11 @@ Out of scope for v1; revisited only if a captured-run evidence path makes them s
 ## Open decisions (the implementation must resolve before any v2 publication)
 
 - **OpenTelemetry SDK vs OpenTelemetry-shaped JSON without SDK dependency.** v1 ships shaped JSON, no hard SDK dependency.
-- **Local LLM choice.** v1 ships the deterministic stub LLM as the canonical default; live-LLM and hosted-API paths are opt-in only.
+- **Local LLM choice.** v1 ships the deterministic stub LLM as the canonical default. The `Agent` constructor accepts a `Callable[[LLMInput], LLMOutput]` seam, so a caller can plug in a live local-LLM or hosted-API adapter that satisfies that shape; no such adapter ships at v1.
 - **Policy spec language.** v1 ships YAML at [`policy/v1.yaml`](./policy/v1.yaml).
 - **Sandbox primitives.** v1 ships filesystem-path-based with `os.path.realpath` checks.
 - **Trace viewer recommendation.** Jaeger 1.52+ and Grafana Tempo 2.4+ accept the captured `trace.json` files on file import; see [`runs/README.md`](./runs/README.md).
-- **Hosted-API opt-in mechanism.** Env-var opt-in with a startup banner so casual reviewers do not accidentally hit a hosted endpoint.
+- **Hosted-API opt-in mechanism.** Deferred to a future release. Design intent is env-var opt-in with a startup banner so a caller does not accidentally hit a hosted endpoint; no opt-in mechanism ships at v1.
 - **Regression-gate tolerance for failure-mode reruns.** v2 concern; v1 ships byte-identical reproducibility checks via `make canonical-check`, `make policy-gates-check`, `make failure-modes-check`.
 
 ## Verification today
