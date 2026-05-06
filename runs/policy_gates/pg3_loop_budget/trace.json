@@ -1,0 +1,1651 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "agent-runtime-observability"
+            }
+          },
+          {
+            "key": "agent.runtime.subset_version",
+            "value": {
+              "stringValue": "v1.0"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "agent-runtime-observability"
+          },
+          "spans": [
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "5594aa6b342f5d0a",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600000000000",
+              "endTimeUnixNano": "1746489600000000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "0"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "3a5e4842fab428f7",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600001000000",
+              "endTimeUnixNano": "1746489600001000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "0"
+                  }
+                }
+              ],
+              "parentSpanId": "5594aa6b342f5d0a"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "62e6e282e5c1657c",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600002000000",
+              "endTimeUnixNano": "1746489600002000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "5594aa6b342f5d0a"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "78c3a967b36711eb",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600003000000",
+              "endTimeUnixNano": "1746489600003000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "5594aa6b342f5d0a"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "3906a7c8603d71d4",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600004000000",
+              "endTimeUnixNano": "1746489600004000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "0"
+                  }
+                }
+              ],
+              "parentSpanId": "5594aa6b342f5d0a"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "09e7a54d87bdc1f7",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600005000000",
+              "endTimeUnixNano": "1746489600005000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "1"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "0442027aaf1fa95b",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600006000000",
+              "endTimeUnixNano": "1746489600006000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "1"
+                  }
+                }
+              ],
+              "parentSpanId": "09e7a54d87bdc1f7"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "7f86589578df43e4",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600007000000",
+              "endTimeUnixNano": "1746489600007000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "09e7a54d87bdc1f7"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "13167ae8d9dceb37",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600008000000",
+              "endTimeUnixNano": "1746489600008000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "09e7a54d87bdc1f7"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "762833811a71a723",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600009000000",
+              "endTimeUnixNano": "1746489600009000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "1"
+                  }
+                }
+              ],
+              "parentSpanId": "09e7a54d87bdc1f7"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "738626482f61c623",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600010000000",
+              "endTimeUnixNano": "1746489600010000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "2"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "79627cc124d44618",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600011000000",
+              "endTimeUnixNano": "1746489600011000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "2"
+                  }
+                }
+              ],
+              "parentSpanId": "738626482f61c623"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "3c6e4d9ea1a5a5cc",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600012000000",
+              "endTimeUnixNano": "1746489600012000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "2"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "738626482f61c623"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "f72e2140c304bdfc",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600013000000",
+              "endTimeUnixNano": "1746489600013000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "2"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "738626482f61c623"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "6a21e5e812175688",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600014000000",
+              "endTimeUnixNano": "1746489600014000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "2"
+                  }
+                }
+              ],
+              "parentSpanId": "738626482f61c623"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "35d497fb212b86b4",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600015000000",
+              "endTimeUnixNano": "1746489600015000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "3"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "9e656acf0641169a",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600016000000",
+              "endTimeUnixNano": "1746489600016000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "3"
+                  }
+                }
+              ],
+              "parentSpanId": "35d497fb212b86b4"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "0b59f4e629439f25",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600017000000",
+              "endTimeUnixNano": "1746489600017000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "3"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "35d497fb212b86b4"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "d9d4654fec8d4819",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600018000000",
+              "endTimeUnixNano": "1746489600018000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "3"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "35d497fb212b86b4"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "fb40d6bab2c8e012",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600019000000",
+              "endTimeUnixNano": "1746489600019000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "3"
+                  }
+                }
+              ],
+              "parentSpanId": "35d497fb212b86b4"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "1c441ae614a7b8d9",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600020000000",
+              "endTimeUnixNano": "1746489600020000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "4"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "2a9219af1ece8754",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600021000000",
+              "endTimeUnixNano": "1746489600021000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "4"
+                  }
+                }
+              ],
+              "parentSpanId": "1c441ae614a7b8d9"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "5758de781ef34f8f",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600022000000",
+              "endTimeUnixNano": "1746489600022000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "4"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "1c441ae614a7b8d9"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "f48dc7198711925a",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600023000000",
+              "endTimeUnixNano": "1746489600023000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "4"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "1c441ae614a7b8d9"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "a2e2256f5544f250",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600024000000",
+              "endTimeUnixNano": "1746489600024000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "4"
+                  }
+                }
+              ],
+              "parentSpanId": "1c441ae614a7b8d9"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "b916639cbfc9f2a3",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600025000000",
+              "endTimeUnixNano": "1746489600025000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "5"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "bc17bbe948a75834",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600026000000",
+              "endTimeUnixNano": "1746489600026000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "5"
+                  }
+                }
+              ],
+              "parentSpanId": "b916639cbfc9f2a3"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "c18373f70431728d",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600027000000",
+              "endTimeUnixNano": "1746489600027000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "b916639cbfc9f2a3"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "06501d7a135a5471",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600028000000",
+              "endTimeUnixNano": "1746489600028000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "b916639cbfc9f2a3"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "9ef384dd9a6e7785",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600029000000",
+              "endTimeUnixNano": "1746489600029000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "5"
+                  }
+                }
+              ],
+              "parentSpanId": "b916639cbfc9f2a3"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "c39faf42028ef10f",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600030000000",
+              "endTimeUnixNano": "1746489600030000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "6"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "ba4d16cee68320eb",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600031000000",
+              "endTimeUnixNano": "1746489600031000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "6"
+                  }
+                }
+              ],
+              "parentSpanId": "c39faf42028ef10f"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "a68e778c499d7eea",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600032000000",
+              "endTimeUnixNano": "1746489600032000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "6"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "c39faf42028ef10f"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "a83c98033caae017",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600033000000",
+              "endTimeUnixNano": "1746489600033000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "6"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "c39faf42028ef10f"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "ec903eb8d13710d7",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600034000000",
+              "endTimeUnixNano": "1746489600034000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "6"
+                  }
+                }
+              ],
+              "parentSpanId": "c39faf42028ef10f"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "b14c1966162bd3b5",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600035000000",
+              "endTimeUnixNano": "1746489600035000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "7"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "4c0a29d3d0e3f8c8",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600036000000",
+              "endTimeUnixNano": "1746489600036000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "7"
+                  }
+                }
+              ],
+              "parentSpanId": "b14c1966162bd3b5"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "81160cabe56b11a0",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600037000000",
+              "endTimeUnixNano": "1746489600037000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "7"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "b14c1966162bd3b5"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "45e54a009d49a59c",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600038000000",
+              "endTimeUnixNano": "1746489600038000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "7"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "b14c1966162bd3b5"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "7f1e5b7e7af4fbd3",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600039000000",
+              "endTimeUnixNano": "1746489600039000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "7"
+                  }
+                }
+              ],
+              "parentSpanId": "b14c1966162bd3b5"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "2a371bde22584855",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600040000000",
+              "endTimeUnixNano": "1746489600040000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "8"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "6af1703e7a89f3ba",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600041000000",
+              "endTimeUnixNano": "1746489600041000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "8"
+                  }
+                }
+              ],
+              "parentSpanId": "2a371bde22584855"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "ca974053ebea21b4",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600042000000",
+              "endTimeUnixNano": "1746489600042000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "8"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "2a371bde22584855"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "e833d7deccbc1f10",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600043000000",
+              "endTimeUnixNano": "1746489600043000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "8"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "2a371bde22584855"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "ccc5e9304fc1c1ea",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600044000000",
+              "endTimeUnixNano": "1746489600044000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "8"
+                  }
+                }
+              ],
+              "parentSpanId": "2a371bde22584855"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "4f6248912e96c138",
+              "name": "agent_step",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600045000000",
+              "endTimeUnixNano": "1746489600045000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "9"
+                  }
+                }
+              ]
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "f7ee153d6c05a8cd",
+              "name": "llm_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600046000000",
+              "endTimeUnixNano": "1746489600046000000",
+              "attributes": [
+                {
+                  "key": "agent.llm.execution_path",
+                  "value": {
+                    "stringValue": "stub"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "9"
+                  }
+                }
+              ],
+              "parentSpanId": "4f6248912e96c138"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "d2b7b0f733837a24",
+              "name": "policy_check",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600047000000",
+              "endTimeUnixNano": "1746489600047000000",
+              "attributes": [
+                {
+                  "key": "agent.policy.decision",
+                  "value": {
+                    "stringValue": "allow"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "9"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                },
+                {
+                  "key": "policy.version",
+                  "value": {
+                    "stringValue": "240d1c5626e6"
+                  }
+                }
+              ],
+              "parentSpanId": "4f6248912e96c138"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "7d2b9dcdc163018b",
+              "name": "tool_call",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600048000000",
+              "endTimeUnixNano": "1746489600048000000",
+              "attributes": [
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "9"
+                  }
+                },
+                {
+                  "key": "agent.tool_name",
+                  "value": {
+                    "stringValue": "search"
+                  }
+                }
+              ],
+              "parentSpanId": "4f6248912e96c138"
+            },
+            {
+              "traceId": "cd072cd8be6f9f62ac4c09c28206e7e3",
+              "spanId": "4422ae72c3ed5917",
+              "name": "retry_attempt",
+              "kind": 1,
+              "startTimeUnixNano": "1746489600049000000",
+              "endTimeUnixNano": "1746489600049000000",
+              "attributes": [
+                {
+                  "key": "agent.retry.attempt",
+                  "value": {
+                    "intValue": "1"
+                  }
+                },
+                {
+                  "key": "agent.retry.backoff_ms",
+                  "value": {
+                    "intValue": "0"
+                  }
+                },
+                {
+                  "key": "agent.retry.outcome",
+                  "value": {
+                    "stringValue": "success"
+                  }
+                },
+                {
+                  "key": "agent.run_id",
+                  "value": {
+                    "stringValue": "2026-05-06_240d1c56_pg3_loop_budget"
+                  }
+                },
+                {
+                  "key": "agent.step_index",
+                  "value": {
+                    "intValue": "9"
+                  }
+                }
+              ],
+              "parentSpanId": "4f6248912e96c138"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

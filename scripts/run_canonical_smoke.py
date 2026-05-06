@@ -1,4 +1,4 @@
-"""Local canonical-task smoke runner.
+"""Local canonical-task smoke runner + evidence emitter.
 
 Drives the canonical task fixture (``tasks/canonical/v1.json``) through
 a real :class:`Agent.run` against:
@@ -13,16 +13,28 @@ a real :class:`Agent.run` against:
 - ``sandbox_root = data/corpus/v1/`` so the canonical ``read`` step
   passes the ``sandbox_path`` policy gate
 
-Prints a one-line PASS summary; exits 2 on any policy denial, missing
-final_answer, or classified failure mode. No captured runs are
-committed — this is a local validator only.
+Three modes:
+
+- ``python3 -m scripts.run_canonical_smoke`` — local PASS/FAIL smoke;
+  no disk writes (matches PACKET-053 behavior).
+- ``python3 -m scripts.run_canonical_smoke --emit`` — writes the four
+  PACKET-046 §3.1 artifacts to ``runs/<canonical-run-id>/`` (the
+  T-EVIDENCE captured-run path).
+- ``python3 -m scripts.run_canonical_smoke --check`` — re-emits into
+  a tmp area and diffs ``trace.json`` / ``state.jsonl`` /
+  ``run_report.md`` byte-identically against the committed copy
+  (manifest fields ``timestamp`` / ``wall_clock_seconds`` /
+  ``code.git_sha`` are documented as per-run-volatile and excluded).
 """
 
 from __future__ import annotations
 
+import argparse
 import copy
 import json
 import sys
+import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
@@ -30,18 +42,30 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from src.evidence import (
+    EXCLUDED_FROM_REPRODUCIBILITY_DIFF,
+    RUN_ID_DATE,
+    compute_manifest,
+    compute_run_id_policy_prefix,
+    deterministic_time_source,
+    emit_run,
+)
 from src.runtime import (
     Agent,
     PolicyChecker,
     PolicySpec,
     make_canned_llm,
 )
+from src.tracing import new_exporter
 from tools import TOOL_SCHEMAS, default_registry
 
 
 _CANONICAL_FIXTURE = _REPO_ROOT / "tasks" / "canonical" / "v1.json"
 _CORPUS_DIR = _REPO_ROOT / "data" / "corpus" / "v1"
 _POLICY_YAML = _REPO_ROOT / "policy" / "v1.yaml"
+_RUNS_DIR = _REPO_ROOT / "runs"
+_DETERMINISTIC_TIMESTAMP = "2026-05-06T00:00:00Z"
+_DETERMINISTIC_WALL_CLOCK_SECONDS = 0.0
 
 
 def _load_corpus_dict() -> dict[str, str]:
@@ -74,15 +98,19 @@ def _substitute_templates(value, *, corpus_dir: Path):
     return value
 
 
-def main() -> int:
+def _build_run(*, with_exporter: bool, run_id: str | None = None):
+    """Drive the canonical task and return ``(result, spans, exporter)``.
+
+    When ``with_exporter`` is True, the OTel exporter is wired with a
+    deterministic time source so ``trace.json`` is byte-identical
+    across reruns. When False, no exporter is constructed.
+    """
     fixture = json.loads(_CANONICAL_FIXTURE.read_text(encoding="utf-8"))
     corpus = _load_corpus_dict()
     if not corpus:
-        print(
-            f"[canonical] FAIL  corpus empty at {_CORPUS_DIR}; "
-            "run `make fixture-build` first"
+        raise SystemExit(
+            f"corpus empty at {_CORPUS_DIR}; run `make fixture-build` first"
         )
-        return 2
 
     canned = _substitute_templates(
         copy.deepcopy(fixture["canned_llm_tool_calls"]),
@@ -104,6 +132,18 @@ def main() -> int:
     def _recorder(span_class, attrs):
         spans.append((span_class, dict(attrs)))
 
+    if with_exporter:
+        exporter = new_exporter(seed=0, time_source=deterministic_time_source())
+
+        def _both(span_class, attrs):
+            exporter(span_class, attrs)
+            _recorder(span_class, attrs)
+
+        recorder = _both
+    else:
+        exporter = None
+        recorder = _recorder
+
     agent = Agent(
         llm=make_canned_llm(
             canned,
@@ -111,11 +151,14 @@ def main() -> int:
         ),
         tool_registry=default_registry(corpus=corpus),
         policy_checker=checker,
-        span_recorder=_recorder,
+        span_recorder=recorder,
     )
 
-    result = agent.run(fixture["question"])
+    result = agent.run(fixture["question"], run_id=run_id)
+    return fixture, corpus, result, spans, exporter, spec
 
+
+def _smoke_assertions(fixture, result, spans) -> int:
     denies = [
         attrs.get("agent.policy.rule_id")
         for cls, attrs in spans
@@ -149,7 +192,126 @@ def main() -> int:
             f"!= expected {expected_seq!r}"
         )
         return 2
+    return 0
 
+
+def _resolve_canonical_run_dir() -> tuple[str, Path]:
+    prefix = compute_run_id_policy_prefix(repo_root=_REPO_ROOT)
+    run_id = f"{RUN_ID_DATE}_{prefix}_0"
+    return run_id, _RUNS_DIR / run_id
+
+
+def _emit(*, out_root: Path | None = None) -> int:
+    run_id, default_dir = _resolve_canonical_run_dir()
+    fixture, corpus, result, spans, exporter, spec = _build_run(with_exporter=True, run_id=run_id)
+    rc = _smoke_assertions(fixture, result, spans)
+    if rc != 0:
+        return rc
+
+    target = (out_root / run_id) if out_root is not None else default_dir
+    manifest = compute_manifest(
+        repo_root=_REPO_ROOT,
+        run_id=run_id,
+        task_id="canonical",
+        seed=0,
+        timestamp=_DETERMINISTIC_TIMESTAMP,
+        wall_clock_seconds=_DETERMINISTIC_WALL_CLOCK_SECONDS,
+        policy_version=spec.version,
+    )
+
+    emit_run(
+        run_dir=target,
+        agent_result=result,
+        exporter=exporter,
+        spans=spans,
+        manifest=manifest,
+        task_name=fixture.get("question", "canonical"),
+        corpus_description=(
+            "Synthetic 25-document corpus at data/corpus/v1/ "
+            "(seed 20260506; CC0-1.0; PACKET-053 fixture)"
+        ),
+    )
+    print(
+        f"[canonical] WROTE  run_id={run_id}  "
+        f"out={target.relative_to(_REPO_ROOT) if target.is_relative_to(_REPO_ROOT) else target}"
+    )
+    return 0
+
+
+def _drop_dotted(d: dict, dotted: str) -> None:
+    parts = dotted.split(".")
+    cur = d
+    for p in parts[:-1]:
+        if not isinstance(cur, dict) or p not in cur:
+            return
+        cur = cur[p]
+    if isinstance(cur, dict):
+        cur.pop(parts[-1], None)
+
+
+def _check() -> int:
+    run_id, committed_dir = _resolve_canonical_run_dir()
+    if not committed_dir.exists():
+        print(f"[canonical] FAIL  no committed run at {committed_dir}; "
+              "run `make canonical` to emit one first")
+        return 2
+    drift: list[str] = []
+    with tempfile.TemporaryDirectory() as raw:
+        rc = _emit(out_root=Path(raw))
+        if rc != 0:
+            return rc
+        tmp_dir = Path(raw) / run_id
+        for filename in ("trace.json", "state.jsonl", "run_report.md"):
+            fresh = (tmp_dir / filename).read_bytes()
+            committed = (committed_dir / filename).read_bytes()
+            if fresh != committed:
+                drift.append(filename)
+        fresh_manifest = json.loads((tmp_dir / "manifest.json").read_text())
+        committed_manifest = json.loads((committed_dir / "manifest.json").read_text())
+        for key in EXCLUDED_FROM_REPRODUCIBILITY_DIFF:
+            _drop_dotted(fresh_manifest, key)
+            _drop_dotted(committed_manifest, key)
+        if fresh_manifest != committed_manifest:
+            drift.append("manifest.json (excluding volatile keys)")
+
+    if drift:
+        print(f"[canonical] FAIL  drift on {len(drift)} file(s): {drift}")
+        return 2
+    print(f"[canonical] PASS  byte-identical re-emission against committed run {run_id}")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="scripts.run_canonical_smoke",
+        description="Local canonical-task smoke + evidence emitter.",
+    )
+    parser.add_argument(
+        "--emit",
+        action="store_true",
+        help="Write the four PACKET-046 §3.1 artifacts to runs/<canonical-run-id>/",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Re-emit into a tmp area and diff vs the committed canonical run",
+    )
+    args = parser.parse_args(argv)
+
+    if args.check:
+        return _check()
+    if args.emit:
+        return _emit()
+
+    fixture, corpus, result, spans, _, _ = _build_run(with_exporter=False)
+    rc = _smoke_assertions(fixture, result, spans)
+    if rc != 0:
+        return rc
+    tool_calls = [
+        attrs.get("agent.tool_name")
+        for cls, attrs in spans
+        if cls == "tool_call"
+    ]
     print(
         f"[canonical] PASS  steps={result.step_count}  "
         f"terminal={result.terminal_reason}  tools={len(tool_calls)}  "

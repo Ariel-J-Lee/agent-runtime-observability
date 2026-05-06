@@ -1,0 +1,30 @@
+{
+  "run_id": "2026-05-06_240d1c56_pg2_sandbox_escape",
+  "task_id": "pg2_sandbox_escape",
+  "corpus": {
+    "snapshot_id": "1a491e29cc8302b3d013d2f99ea35e546e5c449a3cef591a531f686214b2c359",
+    "source": "synthetic-fixture-corpus",
+    "doc_count": 25,
+    "license_files": [
+      "data/LICENSE.fixture-corpus"
+    ]
+  },
+  "policy": {
+    "spec_path": "policy/v1.yaml",
+    "spec_sha256": "240d1c5626e66d80f9e7bfd2c639a3e668a77d269a042522d44630058f96724a",
+    "version": "240d1c5626e6"
+  },
+  "code": {
+    "git_sha": "b98174a2a92e8d6c102cc050a5022a55b2898184",
+    "tracing_subset_schema_sha256": "ecf51edb8ffc51420cfc92b20608c36e436e6404576978b7ee8acb544e176526"
+  },
+  "llm": {
+    "execution_path": "stub",
+    "stub_script_path": "src/runtime/stub_llm/canned.py",
+    "stub_script_sha256": "722f7f6577648e14ed05d89437b8d626fc208c4e99e25143e4c94c2b1847d622"
+  },
+  "seed": 0,
+  "timestamp": "2026-05-06T00:00:00Z",
+  "wall_clock_seconds": 0.0,
+  "regression_baseline": false
+}
