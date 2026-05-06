@@ -48,9 +48,16 @@ TRACE_ID_PATTERN = "^[0-9a-f]{32}$"
 SPAN_ID_PATTERN = "^[0-9a-f]{16}$"
 UNIX_NANO_PATTERN = "^[0-9]+$"  # OTLP emits times as numeric strings.
 
+# Each OTLP/JSON ``AnyValue`` is a oneof over the supported type keys.
+# ``additionalProperties: False`` blocks unknown keys; ``minProperties``
+# and ``maxProperties`` together require exactly one of the four typed
+# keys to be present, so an empty ``{}`` or a mix like
+# ``{"stringValue": "x", "intValue": "5"}`` both fail validation.
 _ATTRIBUTE_VALUE_SCHEMA: dict[str, Any] = {
     "type": "object",
     "additionalProperties": False,
+    "minProperties": 1,
+    "maxProperties": 1,
     "properties": {
         "stringValue": {"type": "string"},
         "intValue": {"type": "string", "pattern": "^-?[0-9]+$"},
