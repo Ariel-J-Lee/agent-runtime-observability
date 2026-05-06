@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "scenario_id": "catalogued_unhandled",
+  "scenario_class": "F5",
+  "variant": "default",
+  "question": "Tool raises an exception that is not classified by F1-F4.",
+  "canned_llm_tool_calls": [
+    { "step_index": 0, "tool": "summarize", "args": { "text": "poison_fixture" } }
+  ],
+  "stub_behavior": {
+    "tool": "summarize",
+    "mode": "raise_unhandled",
+    "exception_class": "_F5UnhandledError"
+  },
+  "expected": {
+    "failure_mode": "catalogued_unhandled",
+    "terminal_reason": "retry_exhausted",
+    "exception_class": "_F5UnhandledError"
+  }
+}

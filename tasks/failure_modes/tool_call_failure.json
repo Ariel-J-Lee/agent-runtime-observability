@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "scenario_id": "tool_call_failure",
+  "scenario_class": "F1",
+  "variant": "default",
+  "question": "Fetch a flaky URL that fails twice then succeeds.",
+  "canned_llm_tool_calls": [
+    { "step_index": 0, "tool": "fetch", "args": { "url": "https://fixtures.local/flaky" } }
+  ],
+  "stub_behavior": {
+    "tool": "fetch",
+    "mode": "fail_then_succeed",
+    "fail_count": 2
+  },
+  "expected": {
+    "failure_mode": "tool_call_failure",
+    "terminal_reason": "final_answer",
+    "transient_failure_count": 2,
+    "tool_ok_final": true
+  }
+}
