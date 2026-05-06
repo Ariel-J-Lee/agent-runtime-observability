@@ -1,4 +1,4 @@
-.PHONY: help smoke smoke-runtime trace-smoke canonical policy-gates failure-modes regression
+.PHONY: help smoke smoke-runtime trace-smoke tool-smoke canonical policy-gates failure-modes regression
 
 help:
 	@echo "agent-runtime-observability — v0 controlled scaffold"
@@ -9,6 +9,7 @@ help:
 	@echo "  policy-gates  run the policy-gate scenario tests; SCENARIO=<id> selects one (requires 'pip install -r requirements.txt requirements-dev.txt')"
 	@echo "  failure-modes run the failure-mode scenario tests; SCENARIO=<id> selects one (requires 'pip install -r requirements.txt requirements-dev.txt')"
 	@echo "  trace-smoke   drive the in-tree trace fixture through the OTLP-JSON exporter and validate against the subset schema (requires 'pip install -r requirements.txt')"
+	@echo "  tool-smoke    drive the five v1 tools through a real Agent.run with strict-mode arg_schema enforcement (requires 'pip install -r requirements.txt')"
 	@echo "  canonical     placeholder; lands at Tier 4 in a future implementation packet"
 	@echo "  regression    placeholder; lands at Tier 4 in a future implementation packet"
 
@@ -20,6 +21,9 @@ smoke-runtime:
 
 trace-smoke:
 	@python3 -m scripts.run_trace_smoke
+
+tool-smoke:
+	@python3 -m scripts.run_tool_smoke
 
 canonical:
 	@echo "v0 scaffold; arrives at Tier-4 in a future implementation packet."
