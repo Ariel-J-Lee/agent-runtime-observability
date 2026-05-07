@@ -4,9 +4,9 @@ A governed agent runtime built around inspectability — OpenTelemetry-shaped tr
 
 ## Status
 
-The runtime ships v1 captured-run evidence on `main`. The canonical run [`runs/2026-05-06_240d1c56_0/`](./runs/2026-05-06_240d1c56_0/) walks `search → fetch → read → summarize → final_answer` end-to-end via `make canonical`, against the synthetic 25-document fixture corpus and a deterministic stub LLM (`src/runtime/stub_llm/`) that keeps the canonical run hosted-LLM-free.
+The runtime ships v1 recorded runs on `main`. The canonical run [`runs/2026-05-06_240d1c56_0/`](./runs/2026-05-06_240d1c56_0/) walks `search → fetch → read → summarize → final_answer` end-to-end via `make canonical`, against the synthetic 25-document fixture corpus and a deterministic stub LLM (`src/runtime/stub_llm/`) that keeps the canonical run hosted-LLM-free.
 
-Seven policy-gate runs under [`runs/policy_gates/`](./runs/policy_gates/) and five failure-mode runs under [`runs/failure_modes/`](./runs/failure_modes/) complete the v1 captured-run surface. Each captured run carries the four required artifacts: `trace.json`, `state.jsonl`, `run_report.md`, and `manifest.json`.
+Seven policy-gate runs under [`runs/policy_gates/`](./runs/policy_gates/) and five failure-mode runs under [`runs/failure_modes/`](./runs/failure_modes/) complete the v1 recorded-run set. Each committed run carries the four required artifacts: `trace.json`, `state.jsonl`, `run_report.md`, and `manifest.json`.
 
 ## What this release demonstrates
 
@@ -30,7 +30,7 @@ Seven policy-gate runs under [`runs/policy_gates/`](./runs/policy_gates/) and fi
 
 ## Headline summary
 
-The canonical run (`2026-05-06_240d1c56_0`) executes 5 agent steps with 4 tool calls and 4 retry attempts (0 exhausted; all retries succeeded), emits 22 trace spans (`agent_step` ×5, `llm_call` ×5, `tool_call` ×4, `policy_check` ×4, `retry_attempt` ×4), and terminates with `final_answer` against the 25-document synthetic fixture corpus. Of the five named policy-gate scenarios, **four (PG1, PG2, PG4, PG5) fire deny spans with the documented `rule_id` set in the trace**; PG3 (loop budget; both iteration and token-budget variants) terminates via `agent.terminal_reason = loop_budget` rather than a deny span — a documented runtime gap surfaced in [`runs/policy_gates/pg3_loop_budget/run_report.md`](./runs/policy_gates/pg3_loop_budget/run_report.md). All five canonical failure modes fire `agent.failure_mode` on the offending step and reach their documented terminal state. Numbers and structural facts come from the captured `run_report.md` and `manifest.json` files; nothing in this prose claims more than those files support.
+The canonical run (`2026-05-06_240d1c56_0`) executes 5 agent steps with 4 tool calls and 4 retry attempts (0 exhausted; all retries succeeded), emits 22 trace spans (`agent_step` ×5, `llm_call` ×5, `tool_call` ×4, `policy_check` ×4, `retry_attempt` ×4), and terminates with `final_answer` against the 25-document synthetic fixture corpus. Of the five named policy-gate scenarios, **four (PG1, PG2, PG4, PG5) fire deny spans with the documented `rule_id` set in the trace**; PG3 (loop budget; both iteration and token-budget variants) terminates via `agent.terminal_reason = loop_budget` rather than a deny span — a known gap, tracked at [`runs/policy_gates/pg3_loop_budget/run_report.md`](./runs/policy_gates/pg3_loop_budget/run_report.md). All five canonical failure modes fire `agent.failure_mode` on the offending step and reach their documented terminal state. Numbers and structural facts come from the captured `run_report.md` and `manifest.json` files; nothing in this prose claims more than those files support.
 
 ## Verification surface
 
@@ -51,7 +51,7 @@ The runtime, policy, trace, tool, fixture, and evidence slices verify the runtim
 - `make canonical-check` — re-emit and diff the canonical run against the committed artifacts
 - `make evidence-build` and `make evidence-check` — aggregate emit / diff across canonical + policy-gate + failure-mode runs
 
-The hiring signal is not that this is a production agent platform. It is a bounded reference implementation for governed tool use, schema enforcement, policy gates, failure classification, and traceable agent execution.
+Scope: this is a bounded reference implementation for governed tool use, schema enforcement, policy gates, failure classification, and traceable agent execution — not a production agent platform.
 
 ## Repository shape
 
@@ -96,14 +96,14 @@ The canonical run is deterministic given the pinned seed, the deterministic stub
 
 ## Limits
 
-This is a first runnable proof, not a benchmark.
+This is a reference implementation, not a benchmark.
 
-- **Deterministic stub LLM canonical default.** The committed runs use a deterministic stub LLM at [`src/runtime/stub_llm/canned.py`](./src/runtime/stub_llm/canned.py), keyed by the canonical fixture. The `Agent` constructor accepts a `Callable[[LLMInput], LLMOutput]` seam, so a caller can plug in a live local-LLM or hosted-API adapter that satisfies that shape. **No live local-LLM or hosted-API adapter ships in this release**; the captured-run surface uses the stub default exclusively.
+- **Deterministic stub LLM canonical default.** The committed runs use a deterministic stub LLM at [`src/runtime/stub_llm/canned.py`](./src/runtime/stub_llm/canned.py), keyed by the canonical fixture. The `Agent` constructor accepts a `Callable[[LLMInput], LLMOutput]` seam, so a caller can plug in a live local-LLM or hosted-API adapter that satisfies that shape. **No live local-LLM or hosted-API adapter ships in this release**; the recorded runs use the stub default exclusively.
 - **Synthetic public-safe fixture corpus.** Twenty-five hand-authored CC0-1.0 documents under `data/corpus/v1/`. The runtime is exercised against these only; results do not generalize beyond this corpus.
 - **Single-agent only at v1.** No multi-agent coordination. Multi-agent claims do not appear anywhere in this README, `docs/`, or the repo description.
 - **Filesystem-path-based sandbox.** Sandbox isolation is `realpath`-based against an allowlisted per-run directory. Not container-isolated and not capability-restricted at v1.
-- **PG3 documented runtime gap.** The loop-budget policy (PG3 and PG3-tokens) terminates via `agent.terminal_reason = loop_budget` rather than emitting a `policy_check` deny span. The gap is locked in `tests/evidence/test_pg3_runs_terminate_with_loop_budget_reason`. Surfacing the deny span on PG3 is a follow-on runtime fix.
-- **First proof, not benchmark.** The captured runs demonstrate that the runtime components, the policy-gate denials, and the failure-mode triggers fire end-to-end with reproducible traces. They are not a performance, latency, throughput, or accuracy benchmark.
+- **PG3 known gap.** The loop-budget policy (PG3 and PG3-tokens) terminates via `agent.terminal_reason = loop_budget` rather than emitting a `policy_check` deny span. The gap is locked in `tests/evidence/test_pg3_runs_terminate_with_loop_budget_reason`. Surfacing the deny span on PG3 is a follow-on runtime fix.
+- **Scope: reference, not benchmark.** The captured runs demonstrate that the runtime components, the policy-gate denials, and the failure-mode triggers fire end-to-end with reproducible traces. They are not a performance, latency, throughput, or accuracy benchmark.
 - **Reproducibility envelope is bounded.** Two reviewers running the same `make canonical-check` invocation produce byte-identical `trace.json` and `state.jsonl` given the pinned policy-spec hash, stub-LLM script hash, code SHA, and seed. Reproducibility across substantively different code or policy revisions is not claimed.
 - **No coding-agent claim, no MCP-server claim.** Both deferred; neither is in v1 scope.
 - **No production deployment claim, no customer-deployment claim, no autonomous-agent operation, no large-scale inference platform claim, no RLHF / DPO / LoRA training.** This is a local reference implementation.
